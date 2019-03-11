@@ -8,23 +8,7 @@ let config = {
       gravity: { y: 200 }
     }
   },
-  scene: {
-    preload: preload,
-    create: create,
-    update: update
-  }
+  scene: [ Level1 ]
 }
 
 let game = new Phaser.Game(config)
-
-function preload() {
-  this.load.image('sample', 'assets/mario.jpg')
-}
-
-function create() {
-  this.add.image(400, 300, 'sample')
-}
-
-function update() {
-
-}
