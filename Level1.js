@@ -5,15 +5,13 @@ class Level1 extends Phaser.Scene {
   }
 
   preload() {
-    // this.load.image('sample', 'assets/sky.png')
     // this.load.image('ground', 'assets/platform.png')
   }
 
   create() {
-    // this.add.image(400, 300, 'sample')
   this.add.text(77, 112, 'Click to start...', {"font":"bold 20px Arial"});
   this.input.keyboard.on('keyup_ENTER', function() {
-    console.log('hello')
+    this.scene.start('Level2')
   }, this)
 
   }
