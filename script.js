@@ -5,7 +5,7 @@ let config = {
   physics: {
     default: 'arcade',
     arcade: {
-      gravity: { y: 200 }
+      gravity: { y: 800 }
     }
   },
   scene: [ Level1, Level2 ]

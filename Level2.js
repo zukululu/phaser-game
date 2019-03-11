@@ -1,5 +1,7 @@
 let platforms
 let player
+let cursors
+
 class Level2 extends Phaser.Scene {
   constructor() {
     super({key: 'Level2'})
@@ -18,25 +20,22 @@ class Level2 extends Phaser.Scene {
       this.scene.start('Level1')
     }, this)
     
-    platforms = this.add.group()
-    platforms.enableBody = true
-    let ground = platforms.create(400, 500, 'ground')
-    ground.scaleX = 2
-    ground.scaleY = 2
-
-    player = this.add.group()
-    player.enableBody = true
-    let homie = player.create(100, 300, 'woof')
-    console.log(this.physics)
-    console.log(homie.body)
-
-    //Player controls
+    platforms = this.physics.add.staticGroup()
     
+    platforms.create(400, 600, 'ground').setScale(2).refreshBody()
 
+    player = this.physics.add.sprite(100, 300, 'woof')
+    player.setCollideWorldBounds(true)
+    
+    //Player controls
 
+    cursors = this.input.keyboard.createCursorKeys()
   }
 
   update() {
+    if(cursors.up.isDown) {
+      player.y -=10
+    }
   }
 
 }
