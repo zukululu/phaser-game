@@ -8,24 +8,33 @@ class Level2 extends Phaser.Scene {
   }
 
   preload() {
+    this.load.image('bg', 'assets/the-end-by-iloe-and-made.jpg')
     this.load.image('sample', 'assets/sky.png')
     this.load.image('ground', 'assets/platform.png')
     this.load.spritesheet('woof', 'assets/woof.png', { frameWidth: 32, frameHeight: 32 })
   }
 
   create() {
-    this.add.image(400, 300, 'sample')
+    this.cameras.main.setBounds(0, 0, 1920 * 2, 1080 * 2)
+    this.physics.world.setBounds(0, 0, 1920 * 2, 1080 * 2)
+
+    this.add.image(0, 0, 'bg').setOrigin(0)
+    this.add.image(1920, 0, 'bg').setOrigin(0).setFlipX(true)
+    this.add.image(0, 1080, 'bg').setOrigin(0).setFlipY(true)
+    this.add.image(1920, 1080, 'bg').setOrigin(0).setFlipX(true).setFlipY(true)
 
     this.input.keyboard.on('keyup_ENTER', function() {
       this.scene.start('Level1')
     }, this)
     
     platforms = this.physics.add.staticGroup()
-    
     platforms.create(400, 600, 'ground').setScale(2).refreshBody()
 
+    
     player = this.physics.add.sprite(100, 300, 'woof')
     player.setCollideWorldBounds(true)
+    
+    this.cameras.main.startFollow(player, true, 0.05, 0.05)
 
     this.anims.create ({
       key: 'left',
