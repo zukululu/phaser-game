@@ -1,3 +1,5 @@
+let platforms
+let player
 class Level2 extends Phaser.Scene {
   constructor() {
     super({key: 'Level2'})
@@ -11,16 +13,27 @@ class Level2 extends Phaser.Scene {
 
   create() {
     this.add.image(400, 300, 'sample')
-    console.log('hit enter to go back')
+
     this.input.keyboard.on('keyup_ENTER', function() {
       this.scene.start('Level1')
     }, this)
     
-    let ground = this.add.sprite(400, 500, 'ground')
+    platforms = this.add.group()
+    platforms.enableBody = true
+    let ground = platforms.create(400, 500, 'ground')
     ground.scaleX = 2
     ground.scaleY = 2
-    let player = this.add.sprite(100, 300, 'woof')
-    player.body.gravity.y = 800
+
+    player = this.add.group()
+    player.enableBody = true
+    let homie = player.create(100, 300, 'woof')
+    console.log(this.physics)
+    console.log(homie.body)
+
+    //Player controls
+    
+
+
   }
 
   update() {
