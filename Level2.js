@@ -1,5 +1,6 @@
 let platforms
 let player
+let cursors
 let moveKeys
 let enemyBullets
 
@@ -80,67 +81,51 @@ class Level2 extends Phaser.Scene {
     
     platforms = this.physics.add.staticGroup()
     platforms.create(400, 600, 'ground').setScale(2).refreshBody()
-
     
     player = this.physics.add.sprite(100, 300, 'woof')
     player.setCollideWorldBounds(true)
-
+    this.physics.add.collider(player, platforms)
+    
     this.cameras.main.startFollow(player, true, 0.05, 0.05)
 
-    this.anims.create ({
-      key: 'left',
-      frames: this.anims.generateFrameNumbers('woof', { start: 0, end: 1 }),
-      frameRate: 10,
-      repeat: 0
+  this.anims.create ({
+    key: 'left',
+    frames: this.anims.generateFrameNumbers('woof', { start: 0, end: 1 }),
+    frameRate: 10,
+    repeat: 0
   })
 
-    this.anims.create ({
-      key: 'right',
-      frames: this.anims.generateFrameNumbers('woof', { start: 2, end: 3 }),
-      frameRate: 10,
-      repeat: 0
+  this.anims.create ({
+    key: 'right',
+    frames: this.anims.generateFrameNumbers('woof', { start: 2, end: 3 }),
+    frameRate: 10,
+    repeat: 0
   })
 
-    this.physics.add.collider(player, platforms)
-    //Player controls
-
-    // cursors = this.input.keyboard.createCursorKeys()
-
-    moveKeys = this.input.keyboard.addKeys({
-      'up': Phaser.Input.Keyboard.KeyCodes.W,
-      'left': Phaser.Input.Keyboard.KeyCodes.A,
-      'right': Phaser.Input.Keyboard.KeyCodes.D
-  });
-
-  // Enables movement of player with WASD keys
-  this.input.keyboard.on('keydown_W', function (event) {
-    if ('keydown_W' && player.body.touching.down) {
-      player.setVelocityY(-330);
-    }
-  })
-  this.input.keyboard.on('keydown_A', function (event) {
-      player.setVelocityX(-160);
-  })
-  this.input.keyboard.on('keydown_D', function (event) {
-      player.setVelocityX(160);
-  })
-
-  this.input.keyboard.on('keyup_W', function (event) {
-    if (moveKeys['down'].isUp)
-        player.setAccelerationY(0);
-  })
-  this.input.keyboard.on('keyup_A', function (event) {
-      if (moveKeys['right'].isUp)
-          player.setVelocityX(0);
-  })
-  this.input.keyboard.on('keyup_D', function (event) {
-      if (moveKeys['left'].isUp)
-          player.setVelocityX(0);
-  })
-
+  cursors = this.input.keyboard.createCursorKeys()
   }
 
   update() {
-  }
+    if (cursors.left.isDown)
+    {
+        player.setVelocityX(-160);
 
+        player.anims.play('left', true);
+    }
+    else if (cursors.right.isDown)
+    {
+        player.setVelocityX(160);
+
+        player.anims.play('right', true);
+    }
+    else
+    {
+        player.setVelocityX(0);
+    }
+
+    if (cursors.up.isDown && player.body.touching.down)
+    {
+        player.setVelocityY(-330);
+    }
+  }
 }
