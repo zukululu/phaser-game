@@ -28,8 +28,10 @@ class Level2 extends Phaser.Scene {
     }, this)
     
     //World Creation
+    console.log(this)
+    console.log(this.cameras.cameras[0].displayHeight)
     this.cameras.main.setBounds(0, 0, 1920 * 2, 1080 * 2)
-    this.physics.world.setBounds(0, 0, 1920 * 2, 1080 * 2)
+    this.physics.world.setBounds(0, 0, 1920, 1080)
 
     this.add.image(0, 0, 'bg').setOrigin(0)
     // this.add.image(1920, 0, 'bg').setOrigin(0).setFlipX(true)
@@ -49,40 +51,40 @@ class Level2 extends Phaser.Scene {
 
     //Bullets
 
+    
     //Camera
     this.cameras.main.startFollow(this.player, true, 0.05, 0.05)
-
-  this.anims.create ({
-    key: 'left',
-    frames: this.anims.generateFrameNumbers('woof', { start: 0, end: 1 }),
-    frameRate: 10,
-    repeat: 0
-  })
-
-  this.anims.create ({
-    key: 'right',
-    frames: this.anims.generateFrameNumbers('woof', { start: 2, end: 3 }),
-    frameRate: 10,
-    repeat: 0
-  })
-
-  this.cursors = this.input.keyboard.createCursorKeys()
-  this.space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    
+    this.anims.create ({
+      key: 'left',
+      frames: this.anims.generateFrameNumbers('woof', { start: 0, end: 1 }),
+      frameRate: 10,
+      repeat: 0
+    })
+    
+    this.anims.create ({
+      key: 'right',
+      frames: this.anims.generateFrameNumbers('woof', { start: 2, end: 3 }),
+      frameRate: 10,
+      repeat: 0
+    })
+    
+    this.cursors = this.input.keyboard.createCursorKeys()
+    this.space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+  }
+  
+  launchBullet() {
+    this.bullet = this.physics.add.image(this.player.x, this.player.y, 'bullet')
+    this.physics.add.overlap(this.bullet, this.enemy, this.bulletHit, null, this)
+    this.bullet.body.allowGravity = false
+  this.bullet.body.velocity.x = 400
+  console.log(this.bullet)
 }
 
   bulletHit(bullet, enemy) {
     enemy.body.enable = false
     this.enemy.destroy()
     this.bullet.destroy()
-  }
-
-  launchBullet() {
-    this.bullet = this.physics.add.image(-10, -10, 'bullet')
-    this.physics.add.overlap(this.bullet, this.enemy, this.bulletHit, null, this)
-    this.bullet.body.reset(this.player.x, this.player.y)
-    this.bullet.body.allowGravity = false
-    this.bullet.body.velocity.x = 400
-    console.log(this.bullet)
   }
 
   update() {
