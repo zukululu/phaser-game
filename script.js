@@ -8,6 +8,7 @@ let config = {
       gravity: { y: 800 }
     }
   },
+  debug: true,
   scene: [ Level1, Level2 ]
 }
 

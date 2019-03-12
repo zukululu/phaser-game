@@ -2,6 +2,10 @@ let platforms
 let player
 let cursors
 let moveKeys
+let enemy
+var ship
+var lasers
+var mouseTouchDown = false
 
 class Level2 extends Phaser.Scene {
   constructor() {
@@ -12,12 +16,11 @@ class Level2 extends Phaser.Scene {
     this.load.image('bg', 'assets/the-end-by-iloe-and-made.jpg')
     this.load.image('sample', 'assets/sky.png')
     this.load.image('ground', 'assets/platform.png')
-    this.load.image('bullet', 'assets/bullet.png')
+    this.load.image('laser', 'assets/bullet.png')
     this.load.spritesheet('woof', 'assets/woof.png', { frameWidth: 32, frameHeight: 32 })
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 })
   }
   
-
   create() {
     this.cameras.main.setBounds(0, 0, 1920 * 2, 1080 * 2)
     this.physics.world.setBounds(0, 0, 1920 * 2, 1080 * 2)
@@ -59,18 +62,20 @@ class Level2 extends Phaser.Scene {
   cursors = this.input.keyboard.createCursorKeys()
 }
 
-  update(time, delta) {
+  update() {
     if (cursors.left.isDown)
     {
         player.setVelocityX(-160);
 
         player.anims.play('left', true);
+        player.flipX = false
     }
     else if (cursors.right.isDown)
     {
         player.setVelocityX(160);
 
-        player.anims.play('right', true);
+        player.anims.play('left', true);
+        player.flipX = true
     }
     else
     {
