@@ -48,8 +48,6 @@ class Level2 extends Phaser.Scene {
     this.physics.add.collider(this.enemy, this.platforms)
 
     //Bullets
-    this.bullet = this.physics.add.image(-10, -10, 'bullet')
-    this.physics.add.overlap(this.bullet, this.enemy, this.bulletHit, null, this)
 
     //Camera
     this.cameras.main.startFollow(this.player, true, 0.05, 0.05)
@@ -79,6 +77,8 @@ class Level2 extends Phaser.Scene {
   }
 
   launchBullet() {
+    this.bullet = this.physics.add.image(-10, -10, 'bullet')
+    this.physics.add.overlap(this.bullet, this.enemy, this.bulletHit, null, this)
     this.bullet.body.reset(this.player.x, this.player.y)
     this.bullet.body.allowGravity = false
     this.bullet.body.velocity.x = 400
@@ -110,8 +110,8 @@ class Level2 extends Phaser.Scene {
         this.player.setVelocityY(-330);
     }
 
-    if( this.space.isDown) {
+    this.space.on('down', function() {
       this.launchBullet()
-    }
+    }, this)
   }
 }
