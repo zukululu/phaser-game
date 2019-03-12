@@ -8,6 +8,8 @@ class Level2 extends Phaser.Scene {
   this.moveKeys
   this.enemy
   this.bullet
+  this.bullets
+  this.space
   }
 
   preload() {
@@ -33,10 +35,6 @@ class Level2 extends Phaser.Scene {
     // this.add.image(1920, 0, 'bg').setOrigin(0).setFlipX(true)
     this.add.image(0, 1080, 'bg').setOrigin(0).setFlipY(true)
     // this.add.image(1920, 1080, 'bg').setOrigin(0).setFlipX(true).setFlipY(true)
-
-    //Bullets
-    this.bullet = this.physics.add.image(200, 290, 'bullet')
-    this.physics.add.overlap(this.bullet, this.enemy, this.bulletHit, null, this)
     
     //Dummy Platform
     this.platforms = this.physics.add.staticGroup()
@@ -49,10 +47,12 @@ class Level2 extends Phaser.Scene {
     this.physics.add.collider(this.player, this.platforms)
     this.physics.add.collider(this.enemy, this.platforms)
 
+    //Bullets
+    this.bullet = this.physics.add.image(-10, -10, 'bullet')
+    this.physics.add.overlap(this.bullet, this.enemy, this.bulletHit, null, this)
+
     //Camera
     this.cameras.main.startFollow(this.player, true, 0.05, 0.05)
-    
-    this.launchBullet()
 
   this.anims.create ({
     key: 'left',
@@ -69,18 +69,20 @@ class Level2 extends Phaser.Scene {
   })
 
   this.cursors = this.input.keyboard.createCursorKeys()
+  this.space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 }
 
-  bulletHit( bullet, enemy) {
-    this.launchBullet()
+  bulletHit(bullet, enemy) {
     enemy.body.enable = false
-    this.enemy.killAndHide(enemy)
+    this.enemy.destroy()
+    this.bullet.destroy()
   }
 
   launchBullet() {
-    console.log(this.player)
     this.bullet.body.reset(this.player.x, this.player.y)
+    this.bullet.body.allowGravity = false
     this.bullet.body.velocity.x = 400
+    console.log(this.bullet)
   }
 
   update() {
@@ -106,6 +108,10 @@ class Level2 extends Phaser.Scene {
     if (this.cursors.up.isDown && this.player.body.touching.down)
     {
         this.player.setVelocityY(-330);
+    }
+
+    if( this.space.isDown) {
+      this.launchBullet()
     }
   }
 }
