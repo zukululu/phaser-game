@@ -1,5 +1,3 @@
-
-  canFire = true
 class Level2 extends Phaser.Scene {
   constructor() {
     super({key: 'Level2'})
@@ -72,20 +70,13 @@ class Level2 extends Phaser.Scene {
     this.space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
   }
 
-  noFire() {
-    console.log(canFire)
-    canFire = true
-  }
-  
   launchBullet() {
-    if(canFire === true) {
       //Create and initialize bullet properties
       this.bullet = this.physics.add.sprite(this.player.x, this.player.y, 'bullet')
       this.physics.add.overlap(this.bullet, this.enemy, this.bulletHit, null, this)
       this.bullet.body.allowGravity = false
       this.bullet.body.setCollideWorldBounds(true)
       this.bullet.body.onWorldBounds = true
-      console.log(this.bullet)
       //Shoot in faced direction
       if(this.facing === 'right')
         this.bullet.body.velocity.x = 400
@@ -100,9 +91,6 @@ class Level2 extends Phaser.Scene {
           console.log('hello')
         }
       }, this.bullet)
-      canFire = false
-    }
-    setTimeout(this.noFire, 2000)
 }
 
   bulletHit(bullet, enemy) {
@@ -135,9 +123,8 @@ class Level2 extends Phaser.Scene {
         this.player.setVelocityY(-330);
     }
 
-    if(this.space.isDown) {
+    if(Phaser.Input.Keyboard.JustDown(this.space)) {
         this.launchBullet()
-        console.log(canFire)
     }
   }
 }
