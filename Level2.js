@@ -11,6 +11,7 @@ class Level2 extends Phaser.Scene {
   this.bullets
   this.space
   this.canFire = true
+  this.facing = 'right'
   }
 
   preload() {
@@ -80,10 +81,28 @@ class Level2 extends Phaser.Scene {
   
   launchBullet() {
     if(this.canFire === true) {
-      this.bullet = this.physics.add.image(this.player.x, this.player.y, 'bullet')
+      //Create and initialize bullet properties
+      this.bullet = this.physics.add.sprite(this.player.x, this.player.y, 'bullet')
       this.physics.add.overlap(this.bullet, this.enemy, this.bulletHit, null, this)
       this.bullet.body.allowGravity = false
-      this.bullet.body.velocity.x = 400
+      this.bullet.body.setCollideWorldBounds(true)
+      this.bullet.body.onWorldBounds = true
+
+      //Shoot in faced direction
+      if(this.facing === 'right')
+        this.bullet.body.velocity.x = 400
+      else if (this.facing === 'left')
+      this.bullet.body.velocity.x = -400
+    
+      //function to delete bullet after leaving view
+      this.bullet.body.world.on('worldbounds', function(body){
+        if(body.gameObject === this) {
+          this.setActive(false)
+          this.setVisible(false)
+          console.log('hello')
+        }
+      }, this.bullet)
+
       this.canFire = false
     }
     setTimeout(this.noFire, 1000)
@@ -97,17 +116,19 @@ class Level2 extends Phaser.Scene {
   update() {
     if (this.cursors.left.isDown)
     {
-        this.player.setVelocityX(-160);
-
-        this.player.anims.play('left', true);
+        this.player.setVelocityX(-160)
+        this.player.anims.play('left', true)
         this.player.flipX = false
+        this.facing = 'left'
+        console.log(this.facing)
     }
     else if (this.cursors.right.isDown)
     {
-        this.player.setVelocityX(160);
-
-        this.player.anims.play('left', true);
+        this.player.setVelocityX(160)
+        this.player.anims.play('left', true)
         this.player.flipX = true
+        this.facing = 'right'
+        console.log(this.facing)
     }
     else
     {
