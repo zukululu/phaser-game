@@ -147,8 +147,6 @@ class Level2 extends Phaser.Scene {
 
   launchBullet() {
       //Create and initialize bullet properties
-
-      console.log(this.time)
       this.bullet = this.physics.add.sprite(this.player.x, this.player.y, 'bullet')
       this.physics.add.overlap(this.bullet, this.enemy, this.bulletHit, null, this)
       this.bullet.body.allowGravity = false
@@ -169,9 +167,11 @@ class Level2 extends Phaser.Scene {
 }
 
   bulletHit(bullet, enemy) {
-    this.physics.world.removeCollider(this.enemy);
-    this.enemy.setActive(false).setVisible(false)
-    this.bullet.destroy()
+    if(enemy.active === true) {
+      this.physics.world.removeCollider(this.enemy);
+      this.enemy.setActive(false).setVisible(false)
+      this.bullet.destroy()
+    }
   }
 
   enemyChase() {
@@ -199,13 +199,13 @@ class Level2 extends Phaser.Scene {
           enemy.lastFired = time;
 
           // Get bullet from bullets group
-          var bullet = enemyBullets.get().setActive(true).setVisible(true);
+          var enemyBullet = enemyBullets.get().setActive(true).setVisible(true);
 
-          if (bullet)
+          if (enemyBullet)
           {
-              bullet.fire(enemy, player);
+              enemyBullet.fire(enemy, player);
               // Add collider between bullet and player
-              gameObject.physics.add.collider(player, bullet, playerHitCallback);
+              gameObject.physics.add.collider(player, enemyBullet, playerHitCallback);
           }
       }
   }
