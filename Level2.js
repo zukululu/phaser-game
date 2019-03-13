@@ -88,7 +88,6 @@ class Level2 extends Phaser.Scene {
         if(body.gameObject === this) {
           this.setActive(false)
           this.setVisible(false)
-          console.log('hello')
         }
       }, this.bullet)
 }
@@ -125,6 +124,11 @@ class Level2 extends Phaser.Scene {
 
     if(Phaser.Input.Keyboard.JustDown(this.space)) {
         this.launchBullet()
+    }
+
+    console.log('updating...')
+      if(this.player.x <= this.enemy.x + 500 || this.player.x <= this.enemy.x - 500 && this.player.y === this.enemy.y) {
+        console.log('hello')
     }
   }
 }
