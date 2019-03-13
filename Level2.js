@@ -13,6 +13,7 @@ class Level2 extends Phaser.Scene {
   }
 
   preload() {
+    console.log('preload')
     this.load.image('bg', 'assets/the-end-by-iloe-and-made.jpg')
     this.load.image('sample', 'assets/sky.png')
     this.load.image('ground', 'assets/platform.png')
@@ -22,6 +23,7 @@ class Level2 extends Phaser.Scene {
   }
   
   create() {
+    console.log('create')
     //Sample scene transition
     this.input.keyboard.on('keyup_ENTER', function() {
       this.scene.start('Level1')
@@ -49,6 +51,9 @@ class Level2 extends Phaser.Scene {
     this.physics.add.collider(this.player, this.platforms)
     this.physics.add.collider(this.enemy, this.platforms)
 
+    //Enemy Collision
+    this.physics.add.overlap(this.player, this.enemy, this.enemyCollision, null, this)
+
     //Camera
     this.cameras.main.startFollow(this.player, true, 0.05, 0.05)
     
@@ -70,6 +75,10 @@ class Level2 extends Phaser.Scene {
     this.space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
   }
 
+  enemyCollision() {
+    this.player.setActive(false).setVisible(false)
+  }
+
   launchBullet() {
       //Create and initialize bullet properties
       this.bullet = this.physics.add.sprite(this.player.x, this.player.y, 'bullet')
@@ -86,15 +95,30 @@ class Level2 extends Phaser.Scene {
       //function to delete bullet after leaving view
       this.bullet.body.world.on('worldbounds', function(body){
         if(body.gameObject === this) {
-          this.setActive(false)
-          this.setVisible(false)
+          this.setActive(false).setVisible(false)
         }
       }, this.bullet)
 }
 
   bulletHit(bullet, enemy) {
-    this.enemy.destroy()
+    this.enemy.setActive(false).setVisible(false)
     this.bullet.destroy()
+    console.log('dead?')
+    console.log(this.enemy)
+  }
+
+  enemyChase() {
+    // console.log(this.enemy.x)
+    // console.log(this.player.x)
+    // if(this.enemy.x)
+    // console.log('exists')
+    if(this.enemy.x < this.player.x) {
+      this.enemy.setVelocityX(80)
+    } else if (this.enemy.x > this.player.x) {
+      this.enemy.setVelocityX(-80)
+    } else {
+      return
+    }
   }
 
   update() {
@@ -128,7 +152,7 @@ class Level2 extends Phaser.Scene {
 
     console.log('updating...')
       if(this.player.x <= this.enemy.x + 500 || this.player.x <= this.enemy.x - 500 && this.player.y === this.enemy.y) {
-        console.log('hello')
+        this.enemyChase()
     }
   }
 }
