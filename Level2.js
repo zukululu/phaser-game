@@ -1,4 +1,5 @@
 
+  canFire = true
 class Level2 extends Phaser.Scene {
   constructor() {
     super({key: 'Level2'})
@@ -10,8 +11,7 @@ class Level2 extends Phaser.Scene {
   this.bullet
   this.bullets
   this.space
-  this.canFire = true
-  this.facing = 'right'
+  this.facing = 'left'
   }
 
   preload() {
@@ -30,6 +30,7 @@ class Level2 extends Phaser.Scene {
     }, this)
     
     //World Creation
+    console.log(this)
     console.log(this.cameras.cameras[0].displayHeight)
     this.cameras.main.setBounds(0, 0, 1920 * 2, 1080 * 2)
     this.physics.world.setBounds(0, 0, 1920, 1080)
@@ -50,9 +51,6 @@ class Level2 extends Phaser.Scene {
     this.physics.add.collider(this.player, this.platforms)
     this.physics.add.collider(this.enemy, this.platforms)
 
-    //Bullets
-
-    
     //Camera
     this.cameras.main.startFollow(this.player, true, 0.05, 0.05)
     
@@ -75,19 +73,19 @@ class Level2 extends Phaser.Scene {
   }
 
   noFire() {
-    console.log(this.canFire)
-    this.canFire = true
+    console.log(canFire)
+    canFire = true
   }
   
   launchBullet() {
-    if(this.canFire === true) {
+    if(canFire === true) {
       //Create and initialize bullet properties
       this.bullet = this.physics.add.sprite(this.player.x, this.player.y, 'bullet')
       this.physics.add.overlap(this.bullet, this.enemy, this.bulletHit, null, this)
       this.bullet.body.allowGravity = false
       this.bullet.body.setCollideWorldBounds(true)
       this.bullet.body.onWorldBounds = true
-
+      console.log(this.bullet)
       //Shoot in faced direction
       if(this.facing === 'right')
         this.bullet.body.velocity.x = 400
@@ -102,10 +100,9 @@ class Level2 extends Phaser.Scene {
           console.log('hello')
         }
       }, this.bullet)
-
-      this.canFire = false
+      canFire = false
     }
-    setTimeout(this.noFire, 1000)
+    setTimeout(this.noFire, 2000)
 }
 
   bulletHit(bullet, enemy) {
@@ -120,7 +117,6 @@ class Level2 extends Phaser.Scene {
         this.player.anims.play('left', true)
         this.player.flipX = false
         this.facing = 'left'
-        console.log(this.facing)
     }
     else if (this.cursors.right.isDown)
     {
@@ -128,7 +124,6 @@ class Level2 extends Phaser.Scene {
         this.player.anims.play('left', true)
         this.player.flipX = true
         this.facing = 'right'
-        console.log(this.facing)
     }
     else
     {
@@ -142,7 +137,7 @@ class Level2 extends Phaser.Scene {
 
     if(this.space.isDown) {
         this.launchBullet()
-        console.log(this.canFire)
+        console.log(canFire)
     }
   }
 }
