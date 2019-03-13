@@ -10,6 +10,7 @@ class Level2 extends Phaser.Scene {
   this.bullet
   this.bullets
   this.space
+  this.canFire = true
   }
 
   preload() {
@@ -28,7 +29,6 @@ class Level2 extends Phaser.Scene {
     }, this)
     
     //World Creation
-    console.log(this)
     console.log(this.cameras.cameras[0].displayHeight)
     this.cameras.main.setBounds(0, 0, 1920 * 2, 1080 * 2)
     this.physics.world.setBounds(0, 0, 1920, 1080)
@@ -72,17 +72,24 @@ class Level2 extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys()
     this.space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
   }
+
+  noFire() {
+    console.log(this.canFire)
+    this.canFire = true
+  }
   
   launchBullet() {
-    this.bullet = this.physics.add.image(this.player.x, this.player.y, 'bullet')
-    this.physics.add.overlap(this.bullet, this.enemy, this.bulletHit, null, this)
-    this.bullet.body.allowGravity = false
-  this.bullet.body.velocity.x = 400
-  console.log(this.bullet)
+    if(this.canFire === true) {
+      this.bullet = this.physics.add.image(this.player.x, this.player.y, 'bullet')
+      this.physics.add.overlap(this.bullet, this.enemy, this.bulletHit, null, this)
+      this.bullet.body.allowGravity = false
+      this.bullet.body.velocity.x = 400
+      this.canFire = false
+    }
+    setTimeout(this.noFire, 1000)
 }
 
   bulletHit(bullet, enemy) {
-    enemy.body.enable = false
     this.enemy.destroy()
     this.bullet.destroy()
   }
@@ -112,8 +119,9 @@ class Level2 extends Phaser.Scene {
         this.player.setVelocityY(-330);
     }
 
-    this.space.on('down', function() {
-      this.launchBullet()
-    }, this)
+    if(this.space.isDown) {
+        this.launchBullet()
+        console.log(this.canFire)
+    }
   }
 }
