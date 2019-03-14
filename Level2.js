@@ -24,6 +24,9 @@ class Level2 extends Phaser.Scene {
   }
   
   create() {
+    
+    this.enemyBullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
+    console.log(this.enemyBullets)
     console.log('create')
     //Sample scene transition
     this.input.keyboard.on('keyup_ENTER', function() {
@@ -52,7 +55,6 @@ class Level2 extends Phaser.Scene {
     this.flyingEnemy = this.physics.add.sprite(300, 300, 'dude')
     this.flyingEnemy.body.allowGravity = false
     this.flyingEnemy.lastFire = 0
-    console.log(this.flyingEnemy)
     
     this.physics.add.collider(this.player, this.platforms)
     this.physics.add.collider(this.enemy, this.platforms)
@@ -99,7 +101,6 @@ class Level2 extends Phaser.Scene {
       this.bullet.body.allowGravity = false
       this.bullet.body.setCollideWorldBounds(true)
       this.bullet.body.onWorldBounds = true
-      console.log(this.bullet.body.world)
       //Shoot in faced direction
       if(this.facing === 'right')
         this.bullet.body.velocity.x = 400
@@ -178,8 +179,6 @@ class Level2 extends Phaser.Scene {
         this.player.anims.play('left', true)
         this.player.flipX = false
         this.facing = 'left'
-        console.log(this.player.x)
-        console.log(this.player.y)
     }
     else if (this.cursors.right.isDown)
     {
@@ -187,8 +186,6 @@ class Level2 extends Phaser.Scene {
         this.player.anims.play('left', true)
         this.player.flipX = true
         this.facing = 'right'
-        console.log(this.player.x)
-        console.log(this.player.y)
     }
     else
     {
