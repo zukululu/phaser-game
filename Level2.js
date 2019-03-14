@@ -50,6 +50,8 @@ class Level2 extends Phaser.Scene {
     this.enemy = this.physics.add.sprite(300, 300, 'dude')
     this.flyingEnemy = this.physics.add.sprite(300, 300, 'dude')
     this.flyingEnemy.body.allowGravity = false
+    this.flyingEnemy.lastFire = 0
+    console.log(this.flyingEnemy)
     
     this.physics.add.collider(this.player, this.platforms)
     this.physics.add.collider(this.enemy, this.platforms)
@@ -122,19 +124,21 @@ class Level2 extends Phaser.Scene {
     }
   }
 
-  enemyFire() {
+  enemyFire(time) {
+    if(this.flyingEnemy.active === false)
+      return
+
+    if((time - this.flyingEnemy.lastFire) > 1000) {
+      this.flyingEnemy.lastFire = time
      //Create bullet
     this.enemyBullet = this.physics.add.sprite(this.flyingEnemy.x, this.flyingEnemy.y, 'bullet')
     this.physics.add.overlap(this.enemyBullet, this.player, this.bulletCollision, null, this)
     this.enemyBullet.body.allowGravity = false
     this.enemyBullet.body.setCollideWorldBounds(true)
     this.enemyBullet.body.onWorldBounds = true
-    console.log(this.enemyBullet)
-    
+
     this.direction = Math.atan( (this.player.x-this.enemyBullet.x) / (this.player.y-this.enemyBullet.y));
 
-    console.log(this.direction)
-   
     if (this.player.y >= this.enemyBullet.y)
     {
         this.enemyBullet.setVelocityX(Math.sin(this.direction) * 100)
@@ -145,13 +149,12 @@ class Level2 extends Phaser.Scene {
         this.enemyBullet.setVelocityX(-(Math.sin(this.direction) * 100))
         this.enemyBullet.setVelocityY(-(Math.cos(this.direction) * 100))
     }
-
+  }
   }
 
   bulletCollision() {
     if(this.enemyBullet.active === true) {
       this.player.setActive(false).setVisible(false)
-      console.log('ur ded')
     }
   }
 
@@ -189,7 +192,7 @@ class Level2 extends Phaser.Scene {
     }
 
     if(this.player.x <= this.flyingEnemy.x + 300 || this.player.x <= this.flyingEnemy.x - 300 && this.flyingEnemy.active !== false) {
-        this.enemyFire() 
+        this.enemyFire(this.time.now) 
     }
   }
 }
