@@ -2,7 +2,7 @@ class Level2 extends Phaser.Scene {
   constructor() {
     super({key: 'Level2'})
   this.platforms
-  this.player
+  // this.player
   this.cursors
   this.moveKeys
   this.enemy
@@ -24,7 +24,6 @@ class Level2 extends Phaser.Scene {
   }
   
   create() {
-    
     this.enemyBullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
     console.log(this.enemyBullets)
     console.log('create')
