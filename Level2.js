@@ -28,6 +28,7 @@ class Level2 extends Phaser.Scene {
     this.load.image('coin', 'assets/coinGold.png')
     this.load.atlas('player', 'assets/player.png', 'assets/player.json')
     this.load.image('smallGround', 'assets/smallPlatform.png')
+    this.load.image('ladder', 'assets/ladder.png')
   }
   
   create() {
@@ -43,20 +44,27 @@ class Level2 extends Phaser.Scene {
     this.platforms.create(300, 1800, 'ground').setScale(2).refreshBody()
     this.platforms.create(400, 1700, 'smallGround').refreshBody()
     this.platforms.create(500, 1625, 'smallGround').refreshBody()
-
+    this.platforms.create(0, 1525, 'ground').refreshBody()
+    this.ladders = this.physics.add.staticGroup()
+    this.ladders.create(180, 1300, 'ladder').setScale(0.5).refreshBody()
+    this.platforms.create(100, 1200, 'smallGround').refreshBody()
+    
     //Player creation
     this.player = this.physics.add.sprite(100, 1700, 'woof')
-    // this.player.setScale(this.scaleRatio)
     this.player.setActive(true)
     this.player.setCollideWorldBounds(true)
+    this.player.canClimb = false
+    console.log(this.player)
     
     //Enemies Creation
-    this.enemy = this.physics.add.sprite(300, 300, 'dude')
+    this.enemy = this.physics.add.sprite(100, 1300, 'dude')
+    // console.log(this.enemy)
 
-    this.flyingEnemy = this.physics.add.sprite(300, 300, 'dude')
+    this.flyingEnemy = this.physics.add.sprite(500, 1300, 'dude')
     this.flyingEnemy.setDepth(1)
     this.flyingEnemy.body.allowGravity = false
     this.flyingEnemy.lastFire = 0
+    console.log(this.flyingEnemy)
 
     this.flyingEnemy2 = this.physics.add.sprite(700, 300, 'dude')
     this.flyingEnemy2.setDepth(1)
@@ -66,6 +74,9 @@ class Level2 extends Phaser.Scene {
     
     this.physics.add.collider(this.player, this.platforms)
     this.physics.add.collider(this.enemy, this.platforms)
+
+    this.physics.add.overlap(this.player, this.ladders, this.climb, null, this)
+    this.physics.add.overlap(this.player, this.platforms, this.noClimb, null, this)
     
     //Enemy Collision
     this.physics.add.overlap(this.player, this.enemy, this.enemyCollision, null, this)
@@ -95,6 +106,10 @@ class Level2 extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys()
     this.space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     this.shift = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT)
+  }
+
+  climb() {
+    this.player.canClimb = true
   }
 
   enemyCollision() {
@@ -137,7 +152,7 @@ class Level2 extends Phaser.Scene {
     } else if (this.enemy.x > this.player.x) {
       this.enemy.setVelocityX(-50)
     } else {
-      return
+      this.enemy.setVelocityX(0)
     }
   }
 
@@ -181,6 +196,10 @@ class Level2 extends Phaser.Scene {
   }
 
   update() {
+    if (this.player.body.onFloor()) {
+        this.player.canClimb = false
+    }
+
     if (this.cursors.left.isDown)
     {
         this.player.setVelocityX(-160)
@@ -208,26 +227,38 @@ class Level2 extends Phaser.Scene {
 
     if (this.cursors.up.isDown && this.player.body.onFloor())
     {
-        this.player.setVelocityY(-370);
         if (this.shift.isDown && this.cursors.right.isDown) {
           this.player.setVelocityY(-450)
         }
         else if (this.shift.isDown && this.cursors.left.isDown) {
           this.player.setVelocityY(-450)
         }
+        else {
+          this.player.setVelocityY(-370);
+        }
+    }
+
+
+    if(this.player.canClimb === true && this.cursors.up.isDown) {
+      this.player.setVelocityY(-100)
     }
 
     if(Phaser.Input.Keyboard.JustDown(this.space)) {
         this.launchBullet()
     }
 
-    if(this.player.x <= this.enemy.x + 500 || this.player.x <= this.enemy.x - 500 && this.player.y === this.enemy.y && this.enemy.active !== false) {
+    if(this.enemy.active !== false) {
+      if(this.player.y === this.enemy.y + 8) {
         this.enemyChase()
+      }
     }
 
-  //   if(this.player.x <= this.flyingEnemy.x + 300 || this.player.x <= this.flyingEnemy.x - 300 && this.flyingEnemy.active !== false) {
-  //       this.enemyFire(this.flyingEnemy, this.time.now) 
-  //   }
+    if(this.player.y <= this.flyingEnemy.y + 300) {
+      if(this.player.x >= this.flyingEnemy.x - 330)
+        this.enemyFire(this.flyingEnemy, this.time.now) 
+    } else {
+      return
+    }
 
   //   if(this.player.x <= this.flyingEnemy2.x + 300 || this.player.x <= this.flyingEnemy2.x - 300 && this.flyingEnemy2.active !== false) {
   //     this.enemyFire(this.flyingEnemy2, this.time.now) 
