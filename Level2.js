@@ -1,16 +1,18 @@
 class Level2 extends Phaser.Scene {
   constructor() {
     super({key: 'Level2'})
-  this.platforms
-  // this.player
-  this.cursors
-  this.moveKeys
-  this.enemy
-  this.bullet
-  this.bullets
-  this.space
-  this.facing = 'left'
-  this.enemyBullets
+    this.map
+    this.groundLayer, this.coinLayer
+    this.platforms
+    this.player
+    this.cursors
+    this.moveKeys
+    this.enemy
+    this.bullet
+    this.bullets
+    this.space
+    this.facing = 'left'
+    this.scaleRatio = window.devicePixelRatio / 3
   }
 
   preload() {
@@ -21,11 +23,14 @@ class Level2 extends Phaser.Scene {
     this.load.image('bullet', 'assets/bullet.png')
     this.load.spritesheet('woof', 'assets/woof.png', { frameWidth: 32, frameHeight: 32 })
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 })
+    this.load.tilemapTiledJSON('map', 'assets/map.json')
+    this.load.spritesheet('tiles', 'assets/tiles.png', {frameWidth: 70, frameHeight: 70})
+    this.load.image('coin', 'assets/coinGold.png')
+    this.load.atlas('player', 'assets/player.png', 'assets/player.json')
+    this.load.image('smallGround', 'assets/smallPlatform.png')
   }
   
   create() {
-    this.enemyBullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
-    console.log(this.enemyBullets)
     console.log('create')
     //Sample scene transition
     this.input.keyboard.on('keyup_ENTER', function() {
@@ -33,27 +38,31 @@ class Level2 extends Phaser.Scene {
     }, this)
     
     //World Creation
-    this.cameras.main.setBounds(0, 0, 1920 , 1080 )
-    // this.physics.world.setBounds(0, 0, 1920, 1080)
-
-    this.add.image(0, 0, 'bg').setOrigin(0)
-    // this.add.image(1920, 0, 'bg').setOrigin(0).setFlipX(true)
-    this.add.image(0, 1080, 'bg').setOrigin(0).setFlipY(true)
-    // this.add.image(1920, 1080, 'bg').setOrigin(0).setFlipX(true).setFlipY(true)
-    
-    //Dummy Platform
+    // this.cameras.main.setBounds(0, 0, 600 , 2000 )
     this.platforms = this.physics.add.staticGroup()
-    this.platforms.create(900, 600, 'ground').setScale(4).refreshBody()
-    this.platforms.setDepth(1)
-    
+    this.platforms.create(300, 1800, 'ground').setScale(2).refreshBody()
+    this.platforms.create(400, 1700, 'smallGround').refreshBody()
+    this.platforms.create(500, 1625, 'smallGround').refreshBody()
+
     //Player creation
-    this.player = this.physics.add.sprite(100, 300, 'woof')
+    this.player = this.physics.add.sprite(100, 1700, 'woof')
+    // this.player.setScale(this.scaleRatio)
+    this.player.setActive(true)
     this.player.setCollideWorldBounds(true)
     
+    //Enemies Creation
     this.enemy = this.physics.add.sprite(300, 300, 'dude')
+
     this.flyingEnemy = this.physics.add.sprite(300, 300, 'dude')
+    this.flyingEnemy.setDepth(1)
     this.flyingEnemy.body.allowGravity = false
     this.flyingEnemy.lastFire = 0
+
+    this.flyingEnemy2 = this.physics.add.sprite(700, 300, 'dude')
+    this.flyingEnemy2.setDepth(1)
+    this.flyingEnemy2.body.allowGravity = false
+    this.flyingEnemy2.lastFire = 0
+    
     
     this.physics.add.collider(this.player, this.platforms)
     this.physics.add.collider(this.enemy, this.platforms)
@@ -62,11 +71,10 @@ class Level2 extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.enemy, this.enemyCollision, null, this)
 
     //Camera
-    // this.cameras.main.startFollow(this.player, true, 0.05, 0.05)
-    this.cameras.main
-    .setPosition(0, 0)
-    .setSize(2000, 1600)
-    .setZoom(0.5);
+    this.cameras.main.startFollow(this.player)
+
+    // set background color, so the sky is not black    
+    this.cameras.main.setBackgroundColor('#ccccff');
     
 
     
@@ -86,6 +94,7 @@ class Level2 extends Phaser.Scene {
     
     this.cursors = this.input.keyboard.createCursorKeys()
     this.space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.shift = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT)
   }
 
   enemyCollision() {
@@ -132,14 +141,14 @@ class Level2 extends Phaser.Scene {
     }
   }
 
-  enemyFire(time) {
-    if(this.flyingEnemy.active === false)
+  enemyFire(enemy, time) {
+    if(enemy.active === false)
       return
 
-    if((time - this.flyingEnemy.lastFire) > 1000) {
-      this.flyingEnemy.lastFire = time
+    if((time - enemy.lastFire) > 1000) {
+      enemy.lastFire = time
      //Create bullet
-    this.enemyBullet = this.physics.add.sprite(this.flyingEnemy.x, this.flyingEnemy.y, 'bullet')
+    this.enemyBullet = this.physics.add.sprite(enemy.x, enemy.y, 'bullet')
     this.physics.add.overlap(this.enemyBullet, this.player, this.bulletCollision, null, this)
     this.enemyBullet.body.allowGravity = false
     this.enemyBullet.body.setCollideWorldBounds(true)
@@ -178,6 +187,9 @@ class Level2 extends Phaser.Scene {
         this.player.anims.play('left', true)
         this.player.flipX = false
         this.facing = 'left'
+        if (this.shift.isDown) {
+          this.player.setVelocityX(-250)
+        }
     }
     else if (this.cursors.right.isDown)
     {
@@ -185,15 +197,24 @@ class Level2 extends Phaser.Scene {
         this.player.anims.play('left', true)
         this.player.flipX = true
         this.facing = 'right'
+        if (this.shift.isDown) {
+          this.player.setVelocityX(250)
+        }
     }
     else
     {
         this.player.setVelocityX(0);
     }
 
-    if (this.cursors.up.isDown && this.player.body.touching.down)
+    if (this.cursors.up.isDown && this.player.body.onFloor())
     {
         this.player.setVelocityY(-370);
+        if (this.shift.isDown && this.cursors.right.isDown) {
+          this.player.setVelocityY(-450)
+        }
+        else if (this.shift.isDown && this.cursors.left.isDown) {
+          this.player.setVelocityY(-450)
+        }
     }
 
     if(Phaser.Input.Keyboard.JustDown(this.space)) {
@@ -204,8 +225,12 @@ class Level2 extends Phaser.Scene {
         this.enemyChase()
     }
 
-    if(this.player.x <= this.flyingEnemy.x + 300 || this.player.x <= this.flyingEnemy.x - 300 && this.flyingEnemy.active !== false) {
-        this.enemyFire(this.time.now) 
-    }
+  //   if(this.player.x <= this.flyingEnemy.x + 300 || this.player.x <= this.flyingEnemy.x - 300 && this.flyingEnemy.active !== false) {
+  //       this.enemyFire(this.flyingEnemy, this.time.now) 
+  //   }
+
+  //   if(this.player.x <= this.flyingEnemy2.x + 300 || this.player.x <= this.flyingEnemy2.x - 300 && this.flyingEnemy2.active !== false) {
+  //     this.enemyFire(this.flyingEnemy2, this.time.now) 
+  // }
   }
 }
