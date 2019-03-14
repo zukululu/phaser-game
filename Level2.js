@@ -31,7 +31,7 @@ class Level2 extends Phaser.Scene {
     }, this)
     
     //World Creation
-    this.cameras.main.setBounds(0, 0, 1920 * 2, 1080 * 2)
+    this.cameras.main.setBounds(0, 0, 1920 , 1080 )
     // this.physics.world.setBounds(0, 0, 1920, 1080)
 
     this.add.image(0, 0, 'bg').setOrigin(0)
@@ -41,7 +41,8 @@ class Level2 extends Phaser.Scene {
     
     //Dummy Platform
     this.platforms = this.physics.add.staticGroup()
-    this.platforms.create(400, 600, 'ground').setScale(2).refreshBody()
+    this.platforms.create(900, 600, 'ground').setScale(4).refreshBody()
+    this.platforms.setDepth(1)
     
     //Player creation
     this.player = this.physics.add.sprite(100, 300, 'woof')
@@ -60,7 +61,13 @@ class Level2 extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.enemy, this.enemyCollision, null, this)
 
     //Camera
-    this.cameras.main.startFollow(this.player, true, 0.05, 0.05)
+    // this.cameras.main.startFollow(this.player, true, 0.05, 0.05)
+    this.cameras.main
+    .setPosition(0, 0)
+    .setSize(2000, 1600)
+    .setZoom(0.5);
+    
+
     
     this.anims.create ({
       key: 'left',
@@ -92,6 +99,7 @@ class Level2 extends Phaser.Scene {
       this.bullet.body.allowGravity = false
       this.bullet.body.setCollideWorldBounds(true)
       this.bullet.body.onWorldBounds = true
+      console.log(this.bullet.body.world)
       //Shoot in faced direction
       if(this.facing === 'right')
         this.bullet.body.velocity.x = 400
@@ -110,7 +118,7 @@ class Level2 extends Phaser.Scene {
     if(enemy.active === true) {
       this.physics.world.removeCollider(this.enemy);
       this.enemy.setActive(false).setVisible(false)
-      this.bullet.destroy()
+      bullet.destroy()
     }
   }
 
@@ -149,6 +157,11 @@ class Level2 extends Phaser.Scene {
         this.enemyBullet.setVelocityX(-(Math.sin(this.direction) * 100))
         this.enemyBullet.setVelocityY(-(Math.cos(this.direction) * 100))
     }
+    this.enemyBullet.body.world.on('worldbounds', function(body){
+      if(body.gameObject === this) {
+        this.setActive(false).setVisible(false)
+      }
+    }, this.enemyBullet)
   }
   }
 
@@ -165,6 +178,8 @@ class Level2 extends Phaser.Scene {
         this.player.anims.play('left', true)
         this.player.flipX = false
         this.facing = 'left'
+        console.log(this.player.x)
+        console.log(this.player.y)
     }
     else if (this.cursors.right.isDown)
     {
@@ -172,6 +187,8 @@ class Level2 extends Phaser.Scene {
         this.player.anims.play('left', true)
         this.player.flipX = true
         this.facing = 'right'
+        console.log(this.player.x)
+        console.log(this.player.y)
     }
     else
     {
