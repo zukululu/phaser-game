@@ -13,61 +13,6 @@ class Level2 extends Phaser.Scene {
   this.enemyBullets
   }
 
-    Bullet = new Phaser.Class({
-
-      Extends: Phaser.GameObjects.Image,
-
-      initialize:
-
-      // Bullet Constructor
-      function Bullet (scene)
-      {
-          Phaser.GameObjects.Image.call(this, scene, 0, 0, 'bullet');
-          this.speed = 1;
-          this.born = 0;
-          this.direction = 0;
-          this.xSpeed = 0;
-          this.ySpeed = 0;
-          this.setSize(12, 12, true);
-      },
-
-      // Fires a bullet from the player to the reticle
-      fire: function (shooter, target)
-      {
-          this.setPosition(shooter.x, shooter.y); // Initial position
-          this.direction = Math.atan( (target.x-this.x) / (target.y-this.y));
-
-          // Calculate X and y velocity of bullet to moves it from shooter to target
-          if (target.y >= this.y)
-          {
-              this.xSpeed = this.speed*Math.sin(this.direction);
-              this.ySpeed = this.speed*Math.cos(this.direction);
-          }
-          else
-          {
-              this.xSpeed = -this.speed*Math.sin(this.direction);
-              this.ySpeed = -this.speed*Math.cos(this.direction);
-          }
-
-          this.rotation = shooter.rotation; // angle bullet with shooters rotation
-          this.born = 0; // Time since new bullet spawned
-      },
-
-      // Updates the position of the bullet each cycle
-      update: function (time, delta)
-      {
-          this.x += this.xSpeed * delta;
-          this.y += this.ySpeed * delta;
-          this.born += delta;
-          if (this.born > 1800)
-          {
-              this.setActive(false);
-              this.setVisible(false);
-          }
-      }
-
-  });
-
   preload() {
     console.log('preload')
     this.load.image('bg', 'assets/the-end-by-iloe-and-made.jpg')
@@ -86,13 +31,8 @@ class Level2 extends Phaser.Scene {
     }, this)
     
     //World Creation
-    console.log(this)
     this.cameras.main.setBounds(0, 0, 1920 * 2, 1080 * 2)
     // this.physics.world.setBounds(0, 0, 1920, 1080)
-
-    //Bullet Group for objects for enemy
-    this.enemyBullets = this.physics.add.group({ classType: this.Bullet, runChildUpdate: true })
-    console.log(this.enemyBullets)
 
     this.add.image(0, 0, 'bg').setOrigin(0)
     // this.add.image(1920, 0, 'bg').setOrigin(0).setFlipX(true)
@@ -110,8 +50,6 @@ class Level2 extends Phaser.Scene {
     this.enemy = this.physics.add.sprite(300, 300, 'dude')
     this.flyingEnemy = this.physics.add.sprite(300, 300, 'dude')
     this.flyingEnemy.body.allowGravity = false
-    this.flyingEnemy.lastFired = 0
-    console.log(this.flyingEnemy)
     
     this.physics.add.collider(this.player, this.platforms)
     this.physics.add.collider(this.enemy, this.platforms)
@@ -175,10 +113,6 @@ class Level2 extends Phaser.Scene {
   }
 
   enemyChase() {
-    // console.log(this.enemy.x)
-    // console.log(this.player.x)
-    // if(this.enemy.x)
-    // console.log('exists')
     if(this.enemy.x < this.player.x) {
       this.enemy.setVelocityX(50)
     } else if (this.enemy.x > this.player.x) {
@@ -188,26 +122,37 @@ class Level2 extends Phaser.Scene {
     }
   }
 
-  enemyFire(enemy, player, time, gameObject) {
-      if (enemy.active === false)
-      {
-          return;
-      }
+  enemyFire() {
+     //Create bullet
+    this.enemyBullet = this.physics.add.sprite(this.flyingEnemy.x, this.flyingEnemy.y, 'bullet')
+    this.physics.add.overlap(this.enemyBullet, this.player, this.bulletCollision, null, this)
+    this.enemyBullet.body.allowGravity = false
+    this.enemyBullet.body.setCollideWorldBounds(true)
+    this.enemyBullet.body.onWorldBounds = true
+    console.log(this.enemyBullet)
+    
+    this.direction = Math.atan( (this.player.x-this.enemyBullet.x) / (this.player.y-this.enemyBullet.y));
 
-      if ((time - enemy.lastFired) > 1000)
-      {
-          enemy.lastFired = time;
+    console.log(this.direction)
+   
+    if (this.player.y >= this.enemyBullet.y)
+    {
+        this.enemyBullet.setVelocityX(Math.sin(this.direction) * 100)
+        this.enemyBullet.setVelocityY(Math.cos(this.direction) * 100)
+    }
+    else
+    {
+        this.enemyBullet.setVelocityX(-(Math.sin(this.direction) * 100))
+        this.enemyBullet.setVelocityY(-(Math.cos(this.direction) * 100))
+    }
 
-          // Get bullet from bullets group
-          var enemyBullet = enemyBullets.get().setActive(true).setVisible(true);
+  }
 
-          if (enemyBullet)
-          {
-              enemyBullet.fire(enemy, player);
-              // Add collider between bullet and player
-              gameObject.physics.add.collider(player, enemyBullet, playerHitCallback);
-          }
-      }
+  bulletCollision() {
+    if(this.enemyBullet.active === true) {
+      this.player.setActive(false).setVisible(false)
+      console.log('ur ded')
+    }
   }
 
   update() {
@@ -243,6 +188,8 @@ class Level2 extends Phaser.Scene {
         this.enemyChase()
     }
 
-    this.enemyFire(this.flyingEnemy, this.player, this.time, this);
+    if(this.player.x <= this.flyingEnemy.x + 300 || this.player.x <= this.flyingEnemy.x - 300 && this.flyingEnemy.active !== false) {
+        this.enemyFire() 
+    }
   }
 }
