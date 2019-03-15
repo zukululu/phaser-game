@@ -251,6 +251,7 @@ class Level2 extends Phaser.Scene {
       this.enemy2.flipX = true
     } else if (this.enemy2.x > this.player.x) {
       this.enemy2.flipX = false
+      
       this.enemy2.setVelocityX(-50)
     }
   }
