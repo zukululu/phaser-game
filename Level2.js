@@ -125,11 +125,11 @@ class Level2 extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.flyingEnemy2, this.flyingEnemy2Collision, null, this)
 
     //Camera
-    // this.cameras.main.startFollow(this.player)
-    this.cameras.main
-    .setPosition(-300, 0)
-    .setSize(2000, 2000)
-    .setZoom(0.5);
+    this.cameras.main.startFollow(this.player)
+    // this.cameras.main
+    // .setPosition(-300, 0)
+    // .setSize(2000, 2000)
+    // .setZoom(0.5);
   
     // set background color, so the sky is not black    
     this.cameras.main.setBackgroundColor('#222034');
