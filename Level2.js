@@ -14,10 +14,12 @@ class Level2 extends Phaser.Scene {
     this.facing = 'left'
     this.scaleRatio = window.devicePixelRatio / 3
     this.hopper
+    this.camera
   }
 
   preload() {
     console.log('preload')
+    // console.log(this)
     this.load.image('bg', 'assets/the-end-by-iloe-and-made.jpg')
     this.load.image('sample', 'assets/sky.png')
     this.load.image('ground', 'assets/platform.png')
@@ -33,10 +35,15 @@ class Level2 extends Phaser.Scene {
     this.load.image('tinyPlatform', 'assets/tinyPlatform.png')
     this.load.image('mediumPlatform', 'assets/mediumPlatform.png')
     this.load.image('door', 'assets/door.png')
+    this.load.image('floor', 'assets/ground.png')
+    this.load.image('mediumGround', 'assets/mediumGround.png')
+    this.load.image('tinyGround', 'assets/tinyGround.png')
+    this.load.image('platformCover', 'assets/platformCover.png')
+    this.load.image('smallCover', 'assets/smallGround.png')
   }
   
   create() {
-    console.log('create')
+    // this.scale.startFullscreen()
     //Sample scene transition
     this.input.keyboard.on('keyup_ENTER', function() {
       this.scene.start('Level1')
@@ -66,24 +73,36 @@ class Level2 extends Phaser.Scene {
     this.platforms.create(0, 600, 'ground').refreshBody()
     this.door = this.physics.add.sprite(50, 520, 'door').setScale(0.5)
     this.door.body.allowGravity = false
+
+    this.add.image(300, 1810, 'floor').setScale(2)
+    this.add.image(350, 1625, 'mediumGround')
+    this.add.image(200, 1700, 'tinyGround')
+    this.add.image(260, 1470, 'tinyGround')
+    this.add.image(50, 1200, 'tinyGround')
+    this.add.image(130, 1275, 'tinyGround')
+    this.add.image(220, 960, 'tinyGround')
+    this.add.image(200, 1120, 'mediumGround')
+    this.add.image(400, 600, 'mediumGround')
+    this.add.image(-100, 1040, 'platformCover')
+    this.add.image(-100, 1470, 'platformCover')
+    this.add.image(550, 880, 'platformCover')
+    this.add.image(0, 600, 'platformCover')
+    this.add.image(500, 1540, 'smallCover')
     
     //Player creation
     this.player = this.physics.add.sprite(100, 1700, 'woof')
     this.player.setActive(true)
     this.player.setCollideWorldBounds(true)
     this.player.canClimb = false
-    console.log(this.player)
     
     //Enemies Creation
     this.enemy = this.physics.add.sprite(100, 1300, 'dude')
     this.enemy2 = this.physics.add.sprite(230, 1080, 'dude')
-    // console.log(this.enemy)
 
     this.flyingEnemy = this.physics.add.sprite(500, 1250, 'dude')
     this.flyingEnemy.setDepth(1)
     this.flyingEnemy.body.allowGravity = false
     this.flyingEnemy.lastFire = 0
-    console.log(this.flyingEnemy)
 
     this.flyingEnemy2 = this.physics.add.sprite(550, 500, 'dude')
     this.flyingEnemy2.setDepth(1)
@@ -102,6 +121,8 @@ class Level2 extends Phaser.Scene {
     
     //Enemy Collision
     this.physics.add.overlap(this.player, this.enemy, this.enemyCollision, null, this)
+    this.physics.add.overlap(this.player, this.enemy2, this.enemy2Collision, null, this)
+    this.physics.add.overlap(this.player, this.flyingEnemy2, this.enemy2Collision, null, this)
 
     //Camera
     // this.cameras.main.startFollow(this.player)
@@ -111,7 +132,7 @@ class Level2 extends Phaser.Scene {
     .setZoom(0.5);
   
     // set background color, so the sky is not black    
-    this.cameras.main.setBackgroundColor('#ccccff');
+    this.cameras.main.setBackgroundColor('#222034');
     
     this.anims.create ({
       key: 'left',
@@ -149,10 +170,22 @@ class Level2 extends Phaser.Scene {
       this.player.setActive(false).setVisible(false)
   }
 
+  enemy2Collision() {
+    if(this.enemy2.active === true)
+      this.player.setActive(false).setVisible(false)
+  }
+  flyingEnemy2Collision() {
+    if(this.flyingEnemy2.active === true)
+      this.player.setActive(false).setVisible(false)
+  }
+
   launchBullet() {
       //Create and initialize bullet properties
       this.bullet = this.physics.add.sprite(this.player.x, this.player.y, 'bullet')
       this.physics.add.overlap(this.bullet, this.enemy, this.bulletHit, null, this)
+      this.physics.add.overlap(this.bullet, this.enemy2, this.bullet2Hit, null, this)
+      this.physics.add.overlap(this.bullet, this.flyingEnemy, this.bullet3Hit, null, this)
+      this.physics.add.overlap(this.bullet, this.flyingEnemy2, this.bullet4Hit, null, this)
       this.bullet.body.allowGravity = false
       this.bullet.body.setCollideWorldBounds(true)
       this.bullet.body.onWorldBounds = true
@@ -177,16 +210,45 @@ class Level2 extends Phaser.Scene {
       bullet.destroy()
     }
   }
+  bullet2Hit(bullet) {
+    if(this.enemy2.active === true) {
+      this.physics.world.removeCollider(this.enemy2);
+      this.enemy2.setActive(false).setVisible(false)
+      bullet.destroy()
+    }
+  }
+  bullet3Hit(bullet) {
+    if(this.flyingEnemy.active === true) {
+      this.physics.world.removeCollider(this.flyingEnemy);
+      this.flyingEnemy.setActive(false).setVisible(false)
+      bullet.destroy()
+    }
+  }
+  bullet4Hit(bullet) {
+    if(this.flyingEnemy2.active === true) {
+      this.physics.world.removeCollider(this.flyingEnemy2);
+      this.flyingEnemy2.setActive(false).setVisible(false)
+      bullet.destroy()
+    }
+  }
 
   enemyChase() {
-    console.log(`player is ${this.player.y}`)
-    console.log(this.enemy.y)
     if(this.enemy.x < this.player.x) {
       this.enemy.setVelocityX(50)
       this.enemy.flipX = true
     } else if (this.enemy.x > this.player.x) {
       this.enemy.flipX = false
       this.enemy.setVelocityX(-50)
+    }
+  }
+
+  enemy2Chase() {
+    if(this.enemy2.x < this.player.x) {
+      this.enemy2.setVelocityX(50)
+      this.enemy2.flipX = true
+    } else if (this.enemy2.x > this.player.x) {
+      this.enemy2.flipX = false
+      this.enemy2.setVelocityX(-50)
     }
   }
 
@@ -302,6 +364,15 @@ class Level2 extends Phaser.Scene {
       }
       else {
         this.enemy.setVelocityX(0)
+      }
+    }
+
+    if(this.enemy2.active !== false) {
+      if(this.player.y === this.enemy2.y + 8 || this.player.y < this.enemy2.y - 400) {
+        this.enemy2Chase()
+      }
+      else {
+        this.enemy2.setVelocityX(0)
       }
     }
 
