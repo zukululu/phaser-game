@@ -8,7 +8,7 @@ class Level1 extends Phaser.Scene {
   }
 
   create() {
-  this.add.text(350, 300, 'Click to start...', {"font":"bold 20px Arial"});
+  this.add.text(250, 800, 'Click to start...', {"font":"bold 20px Arial"});
   this.input.keyboard.on('keyup_ENTER', function() {
     this.scene.start('Level2')
   }, this)
