@@ -13,6 +13,7 @@ class Level2 extends Phaser.Scene {
     this.space
     this.facing = 'left'
     this.scaleRatio = window.devicePixelRatio / 3
+    this.hopper
   }
 
   preload() {
@@ -29,6 +30,9 @@ class Level2 extends Phaser.Scene {
     this.load.atlas('player', 'assets/player.png', 'assets/player.json')
     this.load.image('smallGround', 'assets/smallPlatform.png')
     this.load.image('ladder', 'assets/ladder.png')
+    this.load.image('tinyPlatform', 'assets/tinyPlatform.png')
+    this.load.image('mediumPlatform', 'assets/mediumPlatform.png')
+    this.load.image('door', 'assets/door.png')
   }
   
   create() {
@@ -42,12 +46,26 @@ class Level2 extends Phaser.Scene {
     // this.cameras.main.setBounds(0, 0, 600 , 2000 )
     this.platforms = this.physics.add.staticGroup()
     this.platforms.create(300, 1800, 'ground').setScale(2).refreshBody()
-    this.platforms.create(400, 1700, 'smallGround').refreshBody()
-    this.platforms.create(500, 1625, 'smallGround').refreshBody()
-    this.platforms.create(0, 1525, 'ground').refreshBody()
+    this.platforms.create(200, 1700, 'tinyPlatform').refreshBody()
+    this.platforms.create(350, 1625, 'mediumPlatform').refreshBody()
+    this.platforms.create(500, 1540, 'smallGround').refreshBody()
+    this.platforms.create(260, 1470, 'tinyPlatform').refreshBody()
+    this.platforms.create(-100, 1470, 'ground').refreshBody()
     this.ladders = this.physics.add.staticGroup()
-    this.ladders.create(180, 1300, 'ladder').setScale(0.5).refreshBody()
-    this.platforms.create(100, 1200, 'smallGround').refreshBody()
+    this.ladders.create(50, 1300, 'ladder').setScale(0.5).refreshBody()
+    this.platforms.create(50, 1200, 'tinyPlatform').refreshBody()
+    this.platforms.create(130, 1275, 'tinyPlatform').refreshBody()
+    this.platforms.create(200, 1120, 'mediumPlatform').refreshBody()
+    this.platforms.create(-100, 1040, 'ground').refreshBody()
+    this.platforms.create(220, 960, 'tinyPlatform').refreshBody()
+    this.platforms.create(550, 880, 'ground').refreshBody()
+    this.ladders.create(400, 700, 'ladder').setScale(0.5).refreshBody()
+    this.platforms.create(400, 600, 'mediumPlatform').refreshBody()
+    this.hopper = this.physics.add.sprite(500, 700, 'tinyPlatform')
+    this.hopper.body.allowGravity = false
+    this.platforms.create(0, 600, 'ground').refreshBody()
+    this.door = this.physics.add.sprite(50, 520, 'door').setScale(0.5)
+    this.door.body.allowGravity = false
     
     //Player creation
     this.player = this.physics.add.sprite(100, 1700, 'woof')
@@ -58,15 +76,16 @@ class Level2 extends Phaser.Scene {
     
     //Enemies Creation
     this.enemy = this.physics.add.sprite(100, 1300, 'dude')
+    this.enemy2 = this.physics.add.sprite(230, 1080, 'dude')
     // console.log(this.enemy)
 
-    this.flyingEnemy = this.physics.add.sprite(500, 1300, 'dude')
+    this.flyingEnemy = this.physics.add.sprite(500, 1250, 'dude')
     this.flyingEnemy.setDepth(1)
     this.flyingEnemy.body.allowGravity = false
     this.flyingEnemy.lastFire = 0
     console.log(this.flyingEnemy)
 
-    this.flyingEnemy2 = this.physics.add.sprite(700, 300, 'dude')
+    this.flyingEnemy2 = this.physics.add.sprite(550, 500, 'dude')
     this.flyingEnemy2.setDepth(1)
     this.flyingEnemy2.body.allowGravity = false
     this.flyingEnemy2.lastFire = 0
@@ -74,20 +93,25 @@ class Level2 extends Phaser.Scene {
     
     this.physics.add.collider(this.player, this.platforms)
     this.physics.add.collider(this.enemy, this.platforms)
+    this.physics.add.collider(this.enemy2, this.platforms)
 
     this.physics.add.overlap(this.player, this.ladders, this.climb, null, this)
     this.physics.add.overlap(this.player, this.platforms, this.noClimb, null, this)
+    this.physics.add.overlap(this.player, this.hopper, this.bounce, null, this)
+    this.physics.add.overlap(this.player, this.door, this.changeScene, null, this)
     
     //Enemy Collision
     this.physics.add.overlap(this.player, this.enemy, this.enemyCollision, null, this)
 
     //Camera
-    this.cameras.main.startFollow(this.player)
-
+    // this.cameras.main.startFollow(this.player)
+    this.cameras.main
+    .setPosition(-300, 0)
+    .setSize(2000, 2000)
+    .setZoom(0.5);
+  
     // set background color, so the sky is not black    
     this.cameras.main.setBackgroundColor('#ccccff');
-    
-
     
     this.anims.create ({
       key: 'left',
@@ -106,6 +130,14 @@ class Level2 extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys()
     this.space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     this.shift = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT)
+  }
+
+  changeScene() {
+    this.scene.start('Level1')
+  }
+
+  bounce() {
+    this.player.setVelocityY(-450)
   }
 
   climb() {
@@ -249,21 +281,21 @@ class Level2 extends Phaser.Scene {
         this.launchBullet()
     }
 
-    if(this.enemy.active !== false) {
-      if(this.player.y === this.enemy.y + 8 || this.player.y < this.enemy.y - 400) {
-        this.enemyChase()
-      }
-      else {
-        this.enemy.setVelocityX(0)
-      }
-    }
+    // if(this.enemy.active !== false) {
+    //   if(this.player.y === this.enemy.y + 8 || this.player.y < this.enemy.y - 400) {
+    //     this.enemyChase()
+    //   }
+    //   else {
+    //     this.enemy.setVelocityX(0)
+    //   }
+    // }
 
-    if(this.player.y <= this.flyingEnemy.y + 300) {
-      if(this.player.x >= this.flyingEnemy.x - 330)
-        this.enemyFire(this.flyingEnemy, this.time.now) 
-    } else {
-      return
-    }
+    // if(this.player.y <= this.flyingEnemy.y + 300) {
+    //   if(this.player.x >= this.flyingEnemy.x - 330)
+    //     this.enemyFire(this.flyingEnemy, this.time.now) 
+    // } else {
+    //   return
+    // }
 
   //   if(this.player.x <= this.flyingEnemy2.x + 300 || this.player.x <= this.flyingEnemy2.x - 300 && this.flyingEnemy2.active !== false) {
   //     this.enemyFire(this.flyingEnemy2, this.time.now) 
