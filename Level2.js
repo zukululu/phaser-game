@@ -147,12 +147,14 @@ class Level2 extends Phaser.Scene {
   }
 
   enemyChase() {
+    console.log(`player is ${this.player.y}`)
+    console.log(this.enemy.y)
     if(this.enemy.x < this.player.x) {
       this.enemy.setVelocityX(50)
+      this.enemy.flipX = true
     } else if (this.enemy.x > this.player.x) {
+      this.enemy.flipX = false
       this.enemy.setVelocityX(-50)
-    } else {
-      this.enemy.setVelocityX(0)
     }
   }
 
@@ -248,8 +250,11 @@ class Level2 extends Phaser.Scene {
     }
 
     if(this.enemy.active !== false) {
-      if(this.player.y === this.enemy.y + 8) {
+      if(this.player.y === this.enemy.y + 8 || this.player.y < this.enemy.y - 400) {
         this.enemyChase()
+      }
+      else {
+        this.enemy.setVelocityX(0)
       }
     }
 
