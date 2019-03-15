@@ -122,7 +122,7 @@ class Level2 extends Phaser.Scene {
     //Enemy Collision
     this.physics.add.overlap(this.player, this.enemy, this.enemyCollision, null, this)
     this.physics.add.overlap(this.player, this.enemy2, this.enemy2Collision, null, this)
-    this.physics.add.overlap(this.player, this.flyingEnemy2, this.enemy2Collision, null, this)
+    this.physics.add.overlap(this.player, this.flyingEnemy2, this.flyingEnemy2Collision, null, this)
 
     //Camera
     // this.cameras.main.startFollow(this.player)
