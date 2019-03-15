@@ -223,6 +223,21 @@ class Level2 extends Phaser.Scene {
   }
   }
 
+  flyingChase() {
+    this.chaseDirection = Math.atan( (this.player.x-this.flyingEnemy2.x) / (this.player.y-this.flyingEnemy2.y));
+
+    if (this.player.y >= this.flyingEnemy2.y)
+    {
+        this.flyingEnemy2.setVelocityX(Math.sin(this.chaseDirection) * 80)
+        this.flyingEnemy2.setVelocityY(Math.cos(this.chaseDirection) * 80)
+    }
+    else
+    {
+        this.flyingEnemy2.setVelocityX(-(Math.sin(this.chaseDirection) * 80))
+        this.flyingEnemy2.setVelocityY(-(Math.cos(this.chaseDirection) * 80))
+    }
+  }
+
   bulletCollision() {
     if(this.enemyBullet.active === true) {
       this.player.setActive(false).setVisible(false)
@@ -281,24 +296,27 @@ class Level2 extends Phaser.Scene {
         this.launchBullet()
     }
 
-    // if(this.enemy.active !== false) {
-    //   if(this.player.y === this.enemy.y + 8 || this.player.y < this.enemy.y - 400) {
-    //     this.enemyChase()
-    //   }
-    //   else {
-    //     this.enemy.setVelocityX(0)
-    //   }
-    // }
+    if(this.enemy.active !== false) {
+      if(this.player.y === this.enemy.y + 8 || this.player.y < this.enemy.y - 400) {
+        this.enemyChase()
+      }
+      else {
+        this.enemy.setVelocityX(0)
+      }
+    }
 
-    // if(this.player.y <= this.flyingEnemy.y + 300) {
-    //   if(this.player.x >= this.flyingEnemy.x - 330)
-    //     this.enemyFire(this.flyingEnemy, this.time.now) 
-    // } else {
-    //   return
-    // }
+    if(this.player.y <= this.flyingEnemy.y + 300) {
+      if(this.player.x >= this.flyingEnemy.x - 330)
+        this.enemyFire(this.flyingEnemy, this.time.now) 
+    } else {
+      return
+    }
 
-  //   if(this.player.x <= this.flyingEnemy2.x + 300 || this.player.x <= this.flyingEnemy2.x - 300 && this.flyingEnemy2.active !== false) {
-  //     this.enemyFire(this.flyingEnemy2, this.time.now) 
-  // }
+    if(this.player.y <= this.flyingEnemy2.y + 300) {
+      if(this.player.x >= this.flyingEnemy2.x - 330)
+        this.flyingChase() 
+    } else {
+      return
+    }
   }
 }
