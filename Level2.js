@@ -167,16 +167,19 @@ class Level2 extends Phaser.Scene {
 
   enemyCollision() {
     if(this.enemy.active === true)
-      this.player.setActive(false).setVisible(false)
+    this.scene.start('Level1')
+    //   this.player.setActive(false).setVisible(false)
   }
 
   enemy2Collision() {
     if(this.enemy2.active === true)
-      this.player.setActive(false).setVisible(false)
+    this.scene.start('Level1')
+    //   this.player.setActive(false).setVisible(false)
   }
   flyingEnemy2Collision() {
     if(this.flyingEnemy2.active === true)
-      this.player.setActive(false).setVisible(false)
+    this.scene.start('Level1')
+      // this.player.setActive(false).setVisible(false)
   }
 
   launchBullet() {
@@ -302,7 +305,8 @@ class Level2 extends Phaser.Scene {
 
   bulletCollision() {
     if(this.enemyBullet.active === true) {
-      this.player.setActive(false).setVisible(false)
+      this.scene.start('Level1')
+      // this.player.setActive(false).setVisible(false)
     }
   }
 
