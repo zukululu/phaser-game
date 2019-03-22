@@ -94,6 +94,7 @@ class Level2 extends Phaser.Scene {
     this.player.setActive(true)
     this.player.setCollideWorldBounds(true)
     this.player.canClimb = false
+    this.player.canJump = true
     
     //Enemies Creation
     this.enemy = this.physics.add.sprite(100, 1300, 'dude')
@@ -109,15 +110,13 @@ class Level2 extends Phaser.Scene {
     this.flyingEnemy2.body.allowGravity = false
     this.flyingEnemy2.lastFire = 0
     
-    
     this.physics.add.collider(this.player, this.platforms)
     this.physics.add.collider(this.enemy, this.platforms)
     this.physics.add.collider(this.enemy2, this.platforms)
 
     this.physics.add.overlap(this.player, this.ladders, this.climb, null, this)
-    this.physics.add.overlap(this.player, this.platforms, this.noClimb, null, this)
     this.physics.add.overlap(this.player, this.hopper, this.bounce, null, this)
-    this.physics.add.overlap(this.player, this.door, this.changeScene, null, this)
+    this.physics.add.overlap(this.player, this.door, this.bossScene, null, this)
     
     //Enemy Collision
     this.physics.add.overlap(this.player, this.enemy, this.enemyCollision, null, this)
@@ -125,11 +124,8 @@ class Level2 extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.flyingEnemy2, this.flyingEnemy2Collision, null, this)
 
     //Camera
+    console.log(this)
     this.cameras.main.startFollow(this.player)
-    // this.cameras.main
-    // .setPosition(-300, 0)
-    // .setSize(2000, 2000)
-    // .setZoom(0.5);
   
     // set background color, so the sky is not black    
     this.cameras.main.setBackgroundColor('#222034');
@@ -157,12 +153,19 @@ class Level2 extends Phaser.Scene {
     this.scene.start('Level1')
   }
 
+  bossScene() {
+    this.scene.start('Boss')
+  }
+
   bounce() {
     this.player.setVelocityY(-450)
   }
 
   climb() {
+    if(this.player.x <= this.ladders.x + 10 || this.player.x >= this.ladders.x - 10) {
     this.player.canClimb = true
+    console.log('climb activated')
+    }
   }
 
   enemyCollision() {
@@ -312,9 +315,6 @@ class Level2 extends Phaser.Scene {
   }
 
   update() {
-    if (this.player.body.onFloor()) {
-        this.player.canClimb = false
-    }
 
     if (this.cursors.left.isDown)
     {

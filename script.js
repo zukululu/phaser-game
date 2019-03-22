@@ -9,7 +9,7 @@ let config = {
     }
   },
   debug: true,
-  scene: [ Level1, Level2 ]
+  scene: [ Level1, Level2, Boss ]
 }
 
 let game = new Phaser.Game(config)
