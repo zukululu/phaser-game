@@ -322,9 +322,6 @@ class Level2 extends Phaser.Scene {
         this.player.anims.play('left', true)
         this.player.flipX = false
         this.facing = 'left'
-        if (this.shift.isDown) {
-          this.player.setVelocityX(-250)
-        }
     }
     else if (this.cursors.right.isDown)
     {
@@ -332,9 +329,6 @@ class Level2 extends Phaser.Scene {
         this.player.anims.play('left', true)
         this.player.flipX = true
         this.facing = 'right'
-        if (this.shift.isDown) {
-          this.player.setVelocityX(250)
-        }
     }
     else
     {
@@ -343,15 +337,7 @@ class Level2 extends Phaser.Scene {
 
     if (this.cursors.up.isDown && this.player.body.onFloor())
     {
-        if (this.shift.isDown && this.cursors.right.isDown) {
-          this.player.setVelocityY(-450)
-        }
-        else if (this.shift.isDown && this.cursors.left.isDown) {
-          this.player.setVelocityY(-450)
-        }
-        else {
-          this.player.setVelocityY(-370);
-        }
+        this.player.setVelocityY(-370);
     }
 
 
