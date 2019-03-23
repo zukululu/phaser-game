@@ -130,7 +130,7 @@ class Level2 extends Phaser.Scene {
     this.cameras.main.startFollow(this.player)
   
     // set background color, so the sky is not black    
-    this.cameras.main.setBackgroundColor('#222034');
+    this.cameras.main.setBackgroundColor('#222034')
     
     this.anims.create ({
       key: 'left',

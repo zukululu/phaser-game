@@ -39,9 +39,28 @@ class Boss extends Phaser.Scene {
     this.load.image('tinyGround', 'assets/tinyGround.png')
     this.load.image('platformCover', 'assets/platformCover.png')
     this.load.image('smallCover', 'assets/smallGround.png')
+    this.load.image('sideWall', 'assets/side wall.png')
+    this.load.image('otherSide', 'assets/otherSide.png')
+    this.load.image('longLadder', 'assets/longLadder.png')
   }
 
   create() {
+    
+    this.platforms = this.physics.add.staticGroup()
+    this.platforms.create(300, 1800, 'ground').setScale(2).refreshBody()
+    this.platforms.create(300, 1200, 'ground').setScale(2).refreshBody()
+    this.platforms.create(50, 1400, 'tinyGround').refreshBody()
+    this.platforms.create(580, 1400, 'tinyGround').refreshBody()
+    this.ladders = this.physics.add.staticGroup()
+    this.ladders.create(50, 1550, 'longLadder').setScale(0.55).refreshBody()
+    this.ladders.create(550, 1550, 'longLadder').setScale(0.55).refreshBody()
+    
+    this.add.image(300, 1820, 'floor').setScale(2)
+    this.add.image(-200, 1600, 'sideWall').setScale(2)
+    this.add.image(-200, 1000, 'sideWall').setScale(2)
+    this.add.image(800, 1600, 'otherSide').setScale(2)
+    this.add.image(800, 1000, 'otherSide').setScale(2)
+    
     this.player = this.physics.add.sprite(100, 1700, 'woof')
     this.player.setActive(true)
     this.player.setCollideWorldBounds(true)
@@ -49,14 +68,9 @@ class Boss extends Phaser.Scene {
     this.player.canJump = true
     
     this.enemy = this.physics.add.sprite(400, 1600, 'dude').setScale(2)
-
-    this.platforms = this.physics.add.staticGroup()
-    this.platforms.create(300, 1800, 'ground').setScale(2).refreshBody()
-    this.platforms.create(300, 1200, 'ground').setScale(2).refreshBody()
-    this.platforms.create(50, 1400, 'tinyGround').refreshBody()
-    this.platforms.create(580, 1400, 'tinyGround').refreshBody()
-
-    this.cameras.main.startFollow(this.player)
+    
+    this.cameras.main.startFollow(this.player)    
+    this.cameras.main.setBackgroundColor('#222034')
 
     this.physics.add.collider(this.player, this.platforms)
     this.physics.add.collider(this.enemy, this.platforms)
