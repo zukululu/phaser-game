@@ -15,6 +15,7 @@ class Level2 extends Phaser.Scene {
     this.scaleRatio = window.devicePixelRatio / 3
     this.hopper
     this.camera
+    this.playerHealth = 3
   }
 
   preload() {
@@ -170,19 +171,41 @@ class Level2 extends Phaser.Scene {
 
   enemyCollision() {
     if(this.enemy.active === true)
-    this.scene.start('Level1')
+    this.damagePlayer()
+    // this.scene.start('Level1')
     //   this.player.setActive(false).setVisible(false)
   }
 
   enemy2Collision() {
     if(this.enemy2.active === true)
-    this.scene.start('Level1')
+    
+    this.damagePlayer()
+    // this.scene.start('Level1')
     //   this.player.setActive(false).setVisible(false)
   }
   flyingEnemy2Collision() {
     if(this.flyingEnemy2.active === true)
-    this.scene.start('Level1')
+    this.damagePlayer()
+    // this.scene.start('Level1')
       // this.player.setActive(false).setVisible(false)
+  }
+
+  damagePlayer() {
+    console.log(this.playerHealth)
+    this.playerHealth--
+    
+    // if(this.playerHealth === 0) {
+    //   this.scene.start('Level1')
+    // }
+
+    if (this.facing === 'left') {
+      this.player.body.velocity.x= 370
+      this.player.setVelocityY(-150)
+    }
+    else if (this.facing === 'right') {
+      this.player.body.velocity.x= -370
+      this.player.setVelocityY(-150)
+    }
   }
 
   launchBullet() {

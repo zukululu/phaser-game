@@ -71,36 +71,61 @@ class Boss extends Phaser.Scene {
       frameRate: 10,
       repeat: 0
     })
-    
+  }
+
+  launchBullet() {
+    //Create and initialize bullet properties
+    this.bullet = this.physics.add.sprite(this.player.x, this.player.y, 'bullet')
+    this.physics.add.overlap(this.bullet, this.enemy, this.bulletHit, null, this)
+    this.physics.add.overlap(this.bullet, this.enemy2, this.bullet2Hit, null, this)
+    this.physics.add.overlap(this.bullet, this.flyingEnemy, this.bullet3Hit, null, this)
+    this.physics.add.overlap(this.bullet, this.flyingEnemy2, this.bullet4Hit, null, this)
+    this.bullet.body.allowGravity = false
+    this.bullet.body.setCollideWorldBounds(true)
+    this.bullet.body.onWorldBounds = true
+    //Shoot in faced direction
+    if(this.facing === 'right')
+      this.bullet.body.velocity.x = 400
+    else if (this.facing === 'left')
+    this.bullet.body.velocity.x = -400
+  
+    //function to delete bullet after leaving view
+    this.bullet.body.world.on('worldbounds', function(body){
+      if(body.gameObject === this) {
+        this.setActive(false).setVisible(false)
+      }
+    }, this.bullet)
   }
 
   update() {
-    console.log(this.cursors)
-
     if (this.cursors.left.isDown)
     {
         this.player.setVelocityX(-160)
         this.player.anims.play('left', true)
         this.player.flipX = false
         this.facing = 'left'
-    }
+    } //run left
     else if (this.cursors.right.isDown)
     {
         this.player.setVelocityX(160)
         this.player.anims.play('left', true)
         this.player.flipX = true
         this.facing = 'right'
-    }
+    } //run right
     else
     {
         this.player.setVelocityX(0);
-    }
+    } //stop player when not pressing anything
 
     if (this.cursors.up.isDown && this.player.body.onFloor())
     {
         this.player.setVelocityY(-370);
-    }
+    } //jump
 
-  }
+    if(Phaser.Input.Keyboard.JustDown(this.space)) {
+      this.launchBullet()
+    } //shoot
 
-}
+  } //end update
+
+} // end boss class
