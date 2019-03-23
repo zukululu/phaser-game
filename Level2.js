@@ -20,17 +20,10 @@ class Level2 extends Phaser.Scene {
 
   preload() {
     console.log('preload')
-    // console.log(this)
-    this.load.image('bg', 'assets/the-end-by-iloe-and-made.jpg')
-    this.load.image('sample', 'assets/sky.png')
     this.load.image('ground', 'assets/platform.png')
     this.load.image('bullet', 'assets/bullet.png')
     this.load.spritesheet('woof', 'assets/woof.png', { frameWidth: 32, frameHeight: 32 })
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 })
-    this.load.tilemapTiledJSON('map', 'assets/map.json')
-    this.load.spritesheet('tiles', 'assets/tiles.png', {frameWidth: 70, frameHeight: 70})
-    this.load.image('coin', 'assets/coinGold.png')
-    this.load.atlas('player', 'assets/player.png', 'assets/player.json')
     this.load.image('smallGround', 'assets/smallPlatform.png')
     this.load.image('ladder', 'assets/ladder.png')
     this.load.image('tinyPlatform', 'assets/tinyPlatform.png')
@@ -41,6 +34,8 @@ class Level2 extends Phaser.Scene {
     this.load.image('tinyGround', 'assets/tinyGround.png')
     this.load.image('platformCover', 'assets/platformCover.png')
     this.load.image('smallCover', 'assets/smallGround.png')
+    this.load.image('sideWall', 'assets/side wall.png')
+    this.load.image('otherSide', 'assets/otherSide.png')
   }
   
   create() {
@@ -89,7 +84,13 @@ class Level2 extends Phaser.Scene {
     this.add.image(550, 880, 'platformCover')
     this.add.image(0, 600, 'platformCover')
     this.add.image(500, 1540, 'smallCover')
-    
+    this.add.image(-200, 1600, 'sideWall').setScale(2)
+    this.add.image(-200, 1000, 'sideWall').setScale(2)
+    this.add.image(-200, 400, 'sideWall').setScale(2)
+    this.add.image(800, 1600, 'otherSide').setScale(2)
+    this.add.image(800, 1000, 'otherSide').setScale(2)
+    this.add.image(800, 400, 'otherSide').setScale(2)
+
     //Player creation
     this.player = this.physics.add.sprite(100, 1700, 'woof')
     this.player.setActive(true)

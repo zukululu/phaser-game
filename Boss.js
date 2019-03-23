@@ -47,14 +47,20 @@ class Boss extends Phaser.Scene {
     this.player.setCollideWorldBounds(true)
     this.player.canClimb = false
     this.player.canJump = true
+    
+    this.enemy = this.physics.add.sprite(400, 1600, 'dude').setScale(2)
 
     this.platforms = this.physics.add.staticGroup()
     this.platforms.create(300, 1800, 'ground').setScale(2).refreshBody()
+    this.platforms.create(300, 1200, 'ground').setScale(2).refreshBody()
+    this.platforms.create(50, 1400, 'tinyGround').refreshBody()
+    this.platforms.create(580, 1400, 'tinyGround').refreshBody()
 
     this.cameras.main.startFollow(this.player)
 
     this.physics.add.collider(this.player, this.platforms)
-    
+    this.physics.add.collider(this.enemy, this.platforms)
+
     this.cursors = this.input.keyboard.createCursorKeys()
     this.space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
 
