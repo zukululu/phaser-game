@@ -43,12 +43,13 @@ class Boss extends Phaser.Scene {
     this.load.image('otherSide', 'assets/otherSide.png')
     this.load.image('longLadder', 'assets/longLadder.png')
     this.load.image('rock', 'assets/rock.png')
+    this.load.image('rocksText', 'assets/rocksText.png')
   }
 
   create() {
     
     this.platforms = this.physics.add.staticGroup()
-    this.platforms.create(300, 1800, 'ground').setScale(2).refreshBody()
+    this.platform = this.platforms.create(300, 1800, 'ground').setScale(2).refreshBody()
     this.platforms.create(300, 1200, 'ground').setScale(2).refreshBody()
     this.platforms.create(40, 1400, 'tinyGround').refreshBody()
     this.platforms.create(560, 1400, 'tinyGround').refreshBody()
@@ -61,6 +62,7 @@ class Boss extends Phaser.Scene {
     this.add.image(-200, 1000, 'sideWall').setScale(2)
     this.add.image(800, 1600, 'otherSide').setScale(2)
     this.add.image(800, 1000, 'otherSide').setScale(2)
+    this.add.image(300, 1500, 'rocksText').setScale(2)
 
     this.rock1 = this.physics.add.sprite(200, 1270, 'rock').setScale(1.5)
     this.rock1.body.allowGravity = false
@@ -83,6 +85,8 @@ class Boss extends Phaser.Scene {
     this.enemy = this.physics.add.sprite(400, 1600, 'dude').setScale(2)
     this.enemy.body.setCollideWorldBounds(true)
     this.enemy.body.onWorldBounds = true
+    this.enVelo = -200
+    this.enemy.setVelocityX(this.enVelo)
     
     this.cameras.main.startFollow(this.player)    
     this.cameras.main.setBackgroundColor('#222034')
@@ -90,9 +94,16 @@ class Boss extends Phaser.Scene {
     this.physics.add.collider(this.player, this.platforms)
     this.physics.add.collider(this.enemy, this.platforms)
 
+    this.physics.add.overlap(this.player, this.enemy, this.enemyCollision, null, this)
     this.physics.add.overlap(this.player, this.ladders, this.climb, null, this)
+    this.physics.add.overlap(this.rock1, this.enemy, function() {
+      this.scene.start('Win')
+    }, null, this)
+    this.physics.add.overlap(this.rock2, this.enemy, function() {
+      this.scene.start('Win')
+    }, null, this)
     this.physics.add.overlap(this.rock3, this.enemy, function() {
-      this.scene.start('Level1')
+      this.scene.start('Win')
     }, null, this)
 
     this.cursors = this.input.keyboard.createCursorKeys()
@@ -111,6 +122,12 @@ class Boss extends Phaser.Scene {
       frameRate: 10,
       repeat: 0
     })
+  }
+
+  enemyCollision() {
+    if(this.enemy.active === true)
+    this.scene.start('Death')
+    //   this.player.setActive(false).setVisible(false)
   }
 
   launchBullet() {
@@ -150,6 +167,11 @@ class Boss extends Phaser.Scene {
       rock.setVelocityY(600)
   }
 
+  flipBoss() {
+    this.enVelo *= -1
+    this.enemy.setFlipX(true)
+  }
+
   update() {
     if (this.cursors.left.isDown)
     {
@@ -179,6 +201,11 @@ class Boss extends Phaser.Scene {
       this.launchBullet()
     } //shoot
 
+    if (this.enemy) {
+      this.physics.world.on('worldbounds', this.flipBoss ,this);
+    }
+
+    this.enemy.body.velocity.x = this.enVelo
   } //end update
 
 } // end boss class

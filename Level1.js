@@ -5,12 +5,14 @@ class Level1 extends Phaser.Scene {
   }
 
   preload() {
+    this.load.image('play', 'assets/play.png')
   }
 
   create() {
-  this.add.text(250, 800, 'Click to start...', {"font":"bold 20px Arial"});
+  this.cameras.main.setBackgroundColor('#222034')
+  this.add.image(250, 1000, 'play')
   this.input.keyboard.on('keyup_ENTER', function() {
-    this.scene.start('Boss')
+    this.scene.start('Level1')
   }, this)
   }
 

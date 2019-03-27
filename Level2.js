@@ -38,6 +38,8 @@ class Level2 extends Phaser.Scene {
     this.load.image('otherSide', 'assets/otherSide.png')
     this.load.spritesheet('bat', 'assets/bat.png', { frameWidth: 16, frameHeight: 16})
     this.load.spritesheet('ghost', 'assets/ghost.png', { frameWidth: 16, frameHeight: 16 })
+    this.load.image('death', 'assets/death.png')
+    this.load.image('directions', 'assets/directions.png')
   }
   
   create() {
@@ -92,6 +94,7 @@ class Level2 extends Phaser.Scene {
     this.add.image(800, 1600, 'otherSide').setScale(2)
     this.add.image(800, 1000, 'otherSide').setScale(2)
     this.add.image(800, 400, 'otherSide').setScale(2)
+    this.add.image(300, 1950, 'directions').setScale(1.5)
 
     //Player creation
     this.player = this.physics.add.sprite(100, 1700, 'woof')
@@ -174,22 +177,18 @@ class Level2 extends Phaser.Scene {
 
   enemyCollision() {
     if(this.enemy.active === true)
-    this.damagePlayer()
-    // this.scene.start('Level1')
+    this.scene.start('Death')
     //   this.player.setActive(false).setVisible(false)
   }
 
   enemy2Collision() {
     if(this.enemy2.active === true)
-    
-    this.damagePlayer()
-    // this.scene.start('Level1')
+    this.scene.start('Death')
     //   this.player.setActive(false).setVisible(false)
   }
   flyingEnemy2Collision() {
     if(this.flyingEnemy2.active === true)
-    this.damagePlayer()
-    // this.scene.start('Level1')
+    this.scene.start('Death')
       // this.player.setActive(false).setVisible(false)
   }
 
@@ -335,7 +334,7 @@ class Level2 extends Phaser.Scene {
 
   bulletCollision() {
     if(this.enemyBullet.active === true) {
-      this.scene.start('Level1')
+      this.scene.start('Death')
       // this.player.setActive(false).setVisible(false)
     }
   }
