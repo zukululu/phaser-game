@@ -93,7 +93,7 @@ class Level2 extends Phaser.Scene {
     this.enemy = this.physics.add.sprite(30, 1300, 'dude')
     this.enemy2 = this.physics.add.sprite(230, 1080, 'dude')
 
-    this.flyingEnemy = this.physics.add.sprite(500, 1250, 'dude').setScale(3.5)
+    this.flyingEnemy = this.physics.add.sprite(500, 1250, 'dude')
     this.flyingEnemy.setDepth(1)
     this.flyingEnemy.body.allowGravity = false
     this.flyingEnemy.lastFire = 0

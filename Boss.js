@@ -44,6 +44,7 @@ class Boss extends Phaser.Scene {
     this.load.image('longLadder', 'assets/longLadder.png')
     this.load.image('rock', 'assets/rock.png')
     this.load.image('rocksText', 'assets/rocksText.png')
+    this.load.image('top', 'assets/top.png')
   }
 
   create() {
@@ -58,6 +59,7 @@ class Boss extends Phaser.Scene {
     this.ladders.create(500, 1460, 'longLadder').setScale(0.55).refreshBody()
     
     this.add.image(300, 1820, 'floor').setScale(2)
+    this.add.image(300, 900, 'top').setScale(2)
     this.add.image(-200, 1600, 'sideWall').setScale(2)
     this.add.image(-200, 1000, 'sideWall').setScale(2)
     this.add.image(800, 1600, 'otherSide').setScale(2)

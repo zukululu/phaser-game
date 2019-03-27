@@ -12,7 +12,7 @@ class Level1 extends Phaser.Scene {
   this.cameras.main.setBackgroundColor('#222034')
   this.add.image(250, 1000, 'play')
   this.input.keyboard.on('keyup_ENTER', function() {
-    this.scene.start('Level2')
+    this.scene.start('Boss')
   }, this)
   }
 
