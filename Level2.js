@@ -1,8 +1,6 @@
 class Level2 extends Phaser.Scene {
   constructor() {
     super({key: 'Level2'})
-    this.map
-    this.groundLayer, this.coinLayer
     this.platforms
     this.player
     this.cursors
@@ -12,14 +10,11 @@ class Level2 extends Phaser.Scene {
     this.bullets
     this.space
     this.facing = 'left'
-    this.scaleRatio = window.devicePixelRatio / 3
     this.hopper
     this.camera
-    this.playerHealth = 3
   }
 
   preload() {
-    console.log('preload')
     this.load.image('ground', 'assets/platform.png')
     this.load.image('bullet', 'assets/bullet.png')
     this.load.spritesheet('woof', 'assets/woof.png', { frameWidth: 32, frameHeight: 32 })
@@ -36,21 +31,12 @@ class Level2 extends Phaser.Scene {
     this.load.image('smallCover', 'assets/smallGround.png')
     this.load.image('sideWall', 'assets/side wall.png')
     this.load.image('otherSide', 'assets/otherSide.png')
-    this.load.spritesheet('bat', 'assets/bat.png', { frameWidth: 16, frameHeight: 16})
-    this.load.spritesheet('ghost', 'assets/ghost.png', { frameWidth: 16, frameHeight: 16 })
     this.load.image('death', 'assets/death.png')
     this.load.image('directions', 'assets/directions.png')
   }
   
   create() {
-    // this.scale.startFullscreen()
-    //Sample scene transition
-    this.input.keyboard.on('keyup_ENTER', function() {
-      this.scene.start('Level1')
-    }, this)
-    
     //World Creation
-    // this.cameras.main.setBounds(0, 0, 600 , 2000 )
     this.platforms = this.physics.add.staticGroup()
     this.platforms.create(300, 1800, 'ground').setScale(2).refreshBody()
     this.platforms.create(200, 1700, 'tinyPlatform').refreshBody()
@@ -107,13 +93,13 @@ class Level2 extends Phaser.Scene {
     this.enemy = this.physics.add.sprite(30, 1300, 'dude')
     this.enemy2 = this.physics.add.sprite(230, 1080, 'dude')
 
-    this.flyingEnemy = this.physics.add.sprite(500, 1250, 'bat').setScale(3.5)
+    this.flyingEnemy = this.physics.add.sprite(500, 1250, 'dude').setScale(3.5)
     this.flyingEnemy.setDepth(1)
     this.flyingEnemy.body.allowGravity = false
     this.flyingEnemy.lastFire = 0
     this.flyingEnemy.flipX = true
 
-    this.flyingEnemy2 = this.physics.add.sprite(550, 500, 'ghost')
+    this.flyingEnemy2 = this.physics.add.sprite(550, 500, 'dude')
     this.flyingEnemy2.setDepth(1)
     this.flyingEnemy2.body.allowGravity = false
     
@@ -131,7 +117,6 @@ class Level2 extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.flyingEnemy2, this.flyingEnemy2Collision, null, this)
 
     //Camera
-    console.log(this)
     this.cameras.main.startFollow(this.player)
   
     // set background color, so the sky is not black    
@@ -152,12 +137,7 @@ class Level2 extends Phaser.Scene {
     })
     
     this.cursors = this.input.keyboard.createCursorKeys()
-    this.space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    this.shift = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT)
-  }
-
-  changeScene() {
-    this.scene.start('Level1')
+    this.space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
   }
 
   bossScene() {
@@ -178,36 +158,15 @@ class Level2 extends Phaser.Scene {
   enemyCollision() {
     if(this.enemy.active === true)
     this.scene.start('Death')
-    //   this.player.setActive(false).setVisible(false)
   }
 
   enemy2Collision() {
     if(this.enemy2.active === true)
     this.scene.start('Death')
-    //   this.player.setActive(false).setVisible(false)
   }
   flyingEnemy2Collision() {
     if(this.flyingEnemy2.active === true)
     this.scene.start('Death')
-      // this.player.setActive(false).setVisible(false)
-  }
-
-  damagePlayer() {
-    console.log(this.playerHealth)
-    this.playerHealth--
-    
-    // if(this.playerHealth === 0) {
-    //   this.scene.start('Level1')
-    // }
-
-    if (this.facing === 'left') {
-      this.player.body.velocity.x= 370
-      this.player.setVelocityY(-150)
-    }
-    else if (this.facing === 'right') {
-      this.player.body.velocity.x= -370
-      this.player.setVelocityY(-150)
-    }
   }
 
   launchBullet() {
@@ -335,7 +294,6 @@ class Level2 extends Phaser.Scene {
   bulletCollision() {
     if(this.enemyBullet.active === true) {
       this.scene.start('Death')
-      // this.player.setActive(false).setVisible(false)
     }
   }
 
