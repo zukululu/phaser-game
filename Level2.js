@@ -36,6 +36,8 @@ class Level2 extends Phaser.Scene {
     this.load.image('smallCover', 'assets/smallGround.png')
     this.load.image('sideWall', 'assets/side wall.png')
     this.load.image('otherSide', 'assets/otherSide.png')
+    this.load.spritesheet('bat', 'assets/bat.png', { frameWidth: 16, frameHeight: 16})
+    this.load.spritesheet('ghost', 'assets/ghost.png', { frameWidth: 16, frameHeight: 16 })
   }
   
   create() {
@@ -99,18 +101,18 @@ class Level2 extends Phaser.Scene {
     this.player.canJump = true
     
     //Enemies Creation
-    this.enemy = this.physics.add.sprite(100, 1300, 'dude')
+    this.enemy = this.physics.add.sprite(30, 1300, 'dude')
     this.enemy2 = this.physics.add.sprite(230, 1080, 'dude')
 
-    this.flyingEnemy = this.physics.add.sprite(500, 1250, 'dude')
+    this.flyingEnemy = this.physics.add.sprite(500, 1250, 'bat').setScale(3.5)
     this.flyingEnemy.setDepth(1)
     this.flyingEnemy.body.allowGravity = false
     this.flyingEnemy.lastFire = 0
+    this.flyingEnemy.flipX = true
 
-    this.flyingEnemy2 = this.physics.add.sprite(550, 500, 'dude')
+    this.flyingEnemy2 = this.physics.add.sprite(550, 500, 'ghost')
     this.flyingEnemy2.setDepth(1)
     this.flyingEnemy2.body.allowGravity = false
-    this.flyingEnemy2.lastFire = 0
     
     this.physics.add.collider(this.player, this.platforms)
     this.physics.add.collider(this.enemy, this.platforms)
@@ -235,8 +237,8 @@ class Level2 extends Phaser.Scene {
 
   bulletHit(bullet, enemy) {
     if(enemy.active === true) {
-      this.physics.world.removeCollider(this.enemy);
-      this.enemy.setActive(false).setVisible(false)
+      this.physics.world.removeCollider(enemy);
+      enemy.setActive(false).setVisible(false)
       bullet.destroy()
     }
   }
@@ -374,7 +376,8 @@ class Level2 extends Phaser.Scene {
     }
 
     if(this.enemy.active !== false) {
-      if(this.player.y === this.enemy.y + 8 || this.player.y < this.enemy.y - 400) {
+      if(this.player.y < this.enemy.y + 9 ) {
+        if(this.player.x < this.enemy.x + 100)
         this.enemyChase()
       }
       else {

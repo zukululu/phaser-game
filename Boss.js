@@ -42,6 +42,7 @@ class Boss extends Phaser.Scene {
     this.load.image('sideWall', 'assets/side wall.png')
     this.load.image('otherSide', 'assets/otherSide.png')
     this.load.image('longLadder', 'assets/longLadder.png')
+    this.load.image('rock', 'assets/rock.png')
   }
 
   create() {
@@ -49,17 +50,21 @@ class Boss extends Phaser.Scene {
     this.platforms = this.physics.add.staticGroup()
     this.platforms.create(300, 1800, 'ground').setScale(2).refreshBody()
     this.platforms.create(300, 1200, 'ground').setScale(2).refreshBody()
-    this.platforms.create(50, 1400, 'tinyGround').refreshBody()
-    this.platforms.create(580, 1400, 'tinyGround').refreshBody()
+    this.platforms.create(40, 1400, 'tinyGround').refreshBody()
+    this.platforms.create(560, 1400, 'tinyGround').refreshBody()
     this.ladders = this.physics.add.staticGroup()
-    this.ladders.create(50, 1550, 'longLadder').setScale(0.55).refreshBody()
-    this.ladders.create(550, 1550, 'longLadder').setScale(0.55).refreshBody()
+    this.ladders.create(110, 1460, 'longLadder').setScale(0.55).refreshBody()
+    this.ladders.create(500, 1460, 'longLadder').setScale(0.55).refreshBody()
     
     this.add.image(300, 1820, 'floor').setScale(2)
     this.add.image(-200, 1600, 'sideWall').setScale(2)
     this.add.image(-200, 1000, 'sideWall').setScale(2)
     this.add.image(800, 1600, 'otherSide').setScale(2)
     this.add.image(800, 1000, 'otherSide').setScale(2)
+
+    this.rock1 = this.physics.add.sprite(250, 1300, 'rock').setScale(2)
+    this.rock1.body.allowGravity = false
+    this.rock1.hp = 5
     
     this.player = this.physics.add.sprite(100, 1700, 'woof')
     this.player.setActive(true)
@@ -68,12 +73,19 @@ class Boss extends Phaser.Scene {
     this.player.canJump = true
     
     this.enemy = this.physics.add.sprite(400, 1600, 'dude').setScale(2)
+    this.enemy.body.setCollideWorldBounds(true)
+    this.enemy.body.onWorldBounds = true
+    this.enemy.left = false
+    this.enemy.right = true
     
     this.cameras.main.startFollow(this.player)    
     this.cameras.main.setBackgroundColor('#222034')
 
     this.physics.add.collider(this.player, this.platforms)
     this.physics.add.collider(this.enemy, this.platforms)
+    this.physics.add.collider(this.player, this.rock1)
+
+    this.physics.add.overlap(this.player, this.ladders, this.climb, null, this)
 
     this.cursors = this.input.keyboard.createCursorKeys()
     this.space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
@@ -96,10 +108,7 @@ class Boss extends Phaser.Scene {
   launchBullet() {
     //Create and initialize bullet properties
     this.bullet = this.physics.add.sprite(this.player.x, this.player.y, 'bullet')
-    this.physics.add.overlap(this.bullet, this.enemy, this.bulletHit, null, this)
-    this.physics.add.overlap(this.bullet, this.enemy2, this.bullet2Hit, null, this)
-    this.physics.add.overlap(this.bullet, this.flyingEnemy, this.bullet3Hit, null, this)
-    this.physics.add.overlap(this.bullet, this.flyingEnemy2, this.bullet4Hit, null, this)
+    this.physics.add.overlap(this.bullet, this.rock1, this.dropRock, null, this)
     this.bullet.body.allowGravity = false
     this.bullet.body.setCollideWorldBounds(true)
     this.bullet.body.onWorldBounds = true
@@ -115,6 +124,20 @@ class Boss extends Phaser.Scene {
         this.setActive(false).setVisible(false)
       }
     }, this.bullet)
+  }
+
+  climb() {
+    if(this.player.x <= this.ladders.x + 10 || this.player.x >= this.ladders.x - 10) {
+    this.player.canClimb = true
+    console.log('climb activated')
+    }
+  }
+
+  dropRock(bullet) {
+    bullet.destroy()
+    this.rock1.hp--
+    if(this.rock1.hp === 0)
+      this.rock1.setVelocityY(600)
   }
 
   update() {
