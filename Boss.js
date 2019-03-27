@@ -62,9 +62,17 @@ class Boss extends Phaser.Scene {
     this.add.image(800, 1600, 'otherSide').setScale(2)
     this.add.image(800, 1000, 'otherSide').setScale(2)
 
-    this.rock1 = this.physics.add.sprite(250, 1300, 'rock').setScale(2)
+    this.rock1 = this.physics.add.sprite(200, 1270, 'rock').setScale(1.5)
     this.rock1.body.allowGravity = false
     this.rock1.hp = 5
+
+    this.rock2 = this.physics.add.sprite(300, 1270, 'rock').setScale(1.5)
+    this.rock2.body.allowGravity = false
+    this.rock2.hp = 5
+
+    this.rock3 = this.physics.add.sprite(400, 1270, 'rock').setScale(1.5)
+    this.rock3.body.allowGravity = false
+    this.rock3.hp = 5
     
     this.player = this.physics.add.sprite(100, 1700, 'woof')
     this.player.setActive(true)
@@ -75,17 +83,17 @@ class Boss extends Phaser.Scene {
     this.enemy = this.physics.add.sprite(400, 1600, 'dude').setScale(2)
     this.enemy.body.setCollideWorldBounds(true)
     this.enemy.body.onWorldBounds = true
-    this.enemy.left = false
-    this.enemy.right = true
     
     this.cameras.main.startFollow(this.player)    
     this.cameras.main.setBackgroundColor('#222034')
 
     this.physics.add.collider(this.player, this.platforms)
     this.physics.add.collider(this.enemy, this.platforms)
-    this.physics.add.collider(this.player, this.rock1)
 
     this.physics.add.overlap(this.player, this.ladders, this.climb, null, this)
+    this.physics.add.overlap(this.rock3, this.enemy, function() {
+      this.scene.start('Level1')
+    }, null, this)
 
     this.cursors = this.input.keyboard.createCursorKeys()
     this.space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
@@ -109,6 +117,8 @@ class Boss extends Phaser.Scene {
     //Create and initialize bullet properties
     this.bullet = this.physics.add.sprite(this.player.x, this.player.y, 'bullet')
     this.physics.add.overlap(this.bullet, this.rock1, this.dropRock, null, this)
+    this.physics.add.overlap(this.bullet, this.rock2, this.dropRock, null, this)
+    this.physics.add.overlap(this.bullet, this.rock3, this.dropRock, null, this)
     this.bullet.body.allowGravity = false
     this.bullet.body.setCollideWorldBounds(true)
     this.bullet.body.onWorldBounds = true
@@ -133,11 +143,11 @@ class Boss extends Phaser.Scene {
     }
   }
 
-  dropRock(bullet) {
+  dropRock(bullet, rock) {
     bullet.destroy()
-    this.rock1.hp--
-    if(this.rock1.hp === 0)
-      this.rock1.setVelocityY(600)
+    rock.hp--
+    if(rock.hp === 0)
+      rock.setVelocityY(600)
   }
 
   update() {
